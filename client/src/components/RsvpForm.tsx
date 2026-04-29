@@ -54,7 +54,7 @@ export default function RsvpForm({
   initialValues,
   title = "Confirmez votre présence",
   description = "Remplissez ce formulaire pour nous dire si vous serez des nôtres.",
-  submitLabel = "Envoyer mon RSVP",
+  submitLabel = "Confirmer ma présence",
   successTitle = "Votre réponse est enregistrée",
   successDescription = "Merci, votre réponse a bien été prise en compte.",
   onSubmitted,
