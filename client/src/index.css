@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 45 30% 98%;
+    --foreground: 24 18% 18%;
+    --primary: 33 32% 57%;
+    --primary-foreground: 0 0% 99%;
+    --secondary: 38 28% 91%;
+    --secondary-foreground: 24 18% 18%;
+    --accent: 35 30% 85%;
+    --accent-foreground: 24 18% 18%;
+    --muted: 40 20% 96%;
+    --muted-foreground: 30 10% 46%;
+    --border: 34 18% 88%;
+    --input: 34 18% 93%;
+    --ring: 33 32% 57%;
+    --radius: 0px;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    background-color: #FEFCF8;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-serif tracking-tight;
+    line-height: 1.1;
+  }
+}
+
+@layer utilities {
+  .editorial-shadow {
+    box-shadow: 0 20px 52px -24px rgba(44, 33, 24, 0.14);
+  }
+
+  .editorial-shadow-warm {
+    box-shadow: 0 24px 60px -28px rgba(180, 110, 40, 0.22);
+  }
+
+  .glass-ivory {
+    @apply bg-white/80 backdrop-blur-md border border-white/30;
+  }
+}
+
+/* ─── Ornamental divider ───────────────────────────────── */
+.ornamental-divider {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.ornamental-divider::before,
+.ornamental-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, currentColor, transparent);
+  opacity: 0.22;
+}
+
+/* ─── Scripture blockquote ─────────────────────────────── */
+.scripture-blockquote {
+  position: relative;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+}
+
+.scripture-blockquote::before {
+  content: '\201C';
+  position: absolute;
+  font-size: 5rem;
+  line-height: 1;
+  top: -1.2rem;
+  left: -0.8rem;
+  opacity: 0.07;
+  font-family: 'Playfair Display', serif;
+  pointer-events: none;
+}
+
+/* ─── Blessing theme (Shades of White) ─────────────────── */
+.blessing-section {
+  background: #FEFCF8;
+  color: #2C2118;
+}
+
+.blessing-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(196, 170, 128, 0.2);
+}
+
+/* ─── Evening theme (Shades of Brown) ──────────────────── */
+.evening-section {
+  background: linear-gradient(160deg, #1C1208 0%, #231608 60%, #2A1C0C 100%);
+  color: #F0E4D0;
+}
+
+.evening-card {
+  background: rgba(255, 230, 190, 0.05);
+  border: 1px solid rgba(196, 146, 90, 0.15);
+}
+
+/* ─── Parchment / verse section ─────────────────────────── */
+.parchment-section {
+  background: linear-gradient(180deg, #F5ECE0 0%, #EDE3D5 100%);
+  color: #3C2E22;
+}
+
+/* ─── Animations ─────────────────────────────────────────── */
+@keyframes floatUp {
+  0% { transform: translateY(6px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.float-up {
+  animation: floatUp 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #FEFCF8;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(176, 152, 120, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(176, 152, 120, 0.45);
+}
