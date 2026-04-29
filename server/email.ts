@@ -2,10 +2,10 @@ import { Resend } from "resend";
 import { type RsvpResponse } from "@shared/schema";
 import { kecha2026 } from "@shared/kecha2026";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function sendRsvpConfirmationEmail(rsvp: RsvpResponse) {
-  if (!rsvp.email) return;
+  if (!rsvp.email || !resend) return;
 
   const html = `
     <div style="font-family: 'Playfair Display', serif; background-color: #FAF9F6; padding: 40px; color: #1A1A1A; max-width: 600px; margin: auto; border: 1px solid #D4AF37;">
