@@ -43,9 +43,9 @@ const defaultValues: RsvpFormInput = {
 };
 
 const MEAL_OPTIONS = [
-  { value: "classique", label: "Classique" },
-  { value: "vegetarien", label: "Végétarien" },
-  { value: "halal", label: "Halal" },
+  { value: "journee", label: "Journée" },
+  { value: "soiree", label: "Soirée" },
+  { value: "les-deux", label: "Les deux" },
 ];
 
 export default function RsvpForm({
@@ -250,7 +250,7 @@ export default function RsvpForm({
             name="mealChoice"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Préférence alimentaire</FormLabel>
+                <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Disponibilité</FormLabel>
                 <FormControl>
                   <RadioGroup onValueChange={field.onChange} value={field.value || ""} className="flex flex-wrap gap-3">
                     {MEAL_OPTIONS.map((opt) => (

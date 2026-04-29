@@ -444,6 +444,14 @@ export default function Admin() {
                         <p className="mt-3 text-sm leading-7 text-foreground/65">
                           {guest.guestCount} place{guest.guestCount > 1 ? "s" : ""}
                         </p>
+                        {guest.mealChoice ? (
+                          <p className="mt-1 text-[10px] uppercase tracking-[0.3em] text-foreground/45">
+                            {guest.mealChoice === "journee" ? "Journée"
+                              : guest.mealChoice === "soiree" ? "Soirée"
+                              : guest.mealChoice === "les-deux" ? "Les deux"
+                              : guest.mealChoice}
+                          </p>
+                        ) : null}
                         {guest.checkedInAt ? (
                           <p className="text-[10px] uppercase tracking-[0.35em] text-primary/60">Check-in effectué</p>
                         ) : null}
@@ -640,6 +648,20 @@ export default function Admin() {
                   className="h-12 rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20"
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Disponibilité</label>
+              <select
+                value={guestForm.mealChoice || ""}
+                onChange={(e) => setGuestForm((c) => ({ ...c, mealChoice: e.target.value }))}
+                className="h-12 w-full rounded-none border border-primary/15 bg-transparent px-3 text-sm outline-none focus:border-primary"
+              >
+                <option value="">— Non précisé —</option>
+                <option value="journee">Journée</option>
+                <option value="soiree">Soirée</option>
+                <option value="les-deux">Les deux</option>
+              </select>
             </div>
 
             <div className="space-y-2">
