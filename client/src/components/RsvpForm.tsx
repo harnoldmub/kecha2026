@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ChevronDown } from "lucide-react";
 import { insertRsvpSchema, type RsvpFormInput, type RsvpResponse } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type RsvpFormProps = {
   variant?: "section" | "page" | "invitation";
@@ -42,11 +41,99 @@ const defaultValues: RsvpFormInput = {
   message: "",
 };
 
-const MEAL_OPTIONS = [
-  { value: "journee", label: "Journée" },
-  { value: "soiree", label: "Soirée" },
-  { value: "les-deux", label: "Les deux" },
-];
+/* ─── Styled native select ──────────────────────────────────── */
+function StyledSelect({
+  value,
+  onChange,
+  children,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  children: React.ReactNode;
+  placeholder?: string;
+}) {
+  return (
+    <div className="relative">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-12 w-full appearance-none rounded-none border border-primary/15 bg-transparent px-4 pr-10 text-sm outline-none transition-colors focus:border-primary/50"
+        style={{ color: value ? "inherit" : "rgba(0,0,0,0.35)" }}
+      >
+        {placeholder && (
+          <option value="" disabled hidden>
+            {placeholder}
+          </option>
+        )}
+        {children}
+      </select>
+      <ChevronDown
+        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/35"
+        strokeWidth={1.5}
+      />
+    </div>
+  );
+}
+
+/* ─── Presence toggle cards ─────────────────────────────────── */
+function PresenceToggle({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const opts = [
+    { value: "confirmed", emoji: "✓", label: "Oui, je serai là", sub: "Avec plaisir !" },
+    { value: "declined", emoji: "✗", label: "Non, je ne peux pas", sub: "Je serai avec vous en pensée" },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      {opts.map((opt) => {
+        const active = value === opt.value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className="flex flex-col items-start gap-1.5 border p-4 text-left transition-all duration-200"
+            style={{
+              borderColor: active
+                ? opt.value === "confirmed"
+                  ? "rgba(16,185,129,0.55)"
+                  : "rgba(244,63,94,0.45)"
+                : "rgba(0,0,0,0.1)",
+              background: active
+                ? opt.value === "confirmed"
+                  ? "rgba(16,185,129,0.06)"
+                  : "rgba(244,63,94,0.04)"
+                : "transparent",
+            }}
+          >
+            <span
+              className="text-xl font-light"
+              style={{
+                color: active
+                  ? opt.value === "confirmed"
+                    ? "rgb(16,185,129)"
+                    : "rgb(244,63,94)"
+                  : "rgba(0,0,0,0.25)",
+              }}
+            >
+              {opt.emoji}
+            </span>
+            <span className="text-sm font-medium leading-tight text-foreground">
+              {opt.label}
+            </span>
+            <span className="text-[11px] leading-tight text-foreground/45">{opt.sub}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function RsvpForm({
   variant = "section",
@@ -66,6 +153,8 @@ export default function RsvpForm({
     resolver: zodResolver(insertRsvpSchema),
     defaultValues: { ...defaultValues, ...initialValues },
   });
+
+  const statusValue = form.watch("status");
 
   useEffect(() => {
     form.reset({ ...defaultValues, ...initialValues });
@@ -108,13 +197,18 @@ export default function RsvpForm({
           <CheckCircle2 className="h-10 w-10 text-primary" strokeWidth={1.6} />
         </div>
         <p className="text-[11px] uppercase tracking-[0.45em] text-primary/60">Merci</p>
-        <h3 className="mt-4 text-3xl font-serif text-foreground md:text-4xl">{successTitle}</h3>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-foreground/70">{successDescription}</p>
+        <h3 className="mt-4 font-serif text-3xl text-foreground md:text-4xl">{successTitle}</h3>
+        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-foreground/70">
+          {successDescription}
+        </p>
         <Button
           type="button"
           variant="outline"
-          className="mt-8 rounded-none border-primary/20 px-8 py-6 uppercase tracking-[0.35em] text-[10px] text-primary"
-          onClick={() => { form.reset({ ...defaultValues, ...initialValues }); setSubmitted(false); }}
+          className="mt-8 rounded-none border-primary/20 px-8 py-6 text-[10px] uppercase tracking-[0.35em] text-primary"
+          onClick={() => {
+            form.reset({ ...defaultValues, ...initialValues });
+            setSubmitted(false);
+          }}
         >
           Modifier ma réponse
         </Button>
@@ -126,23 +220,46 @@ export default function RsvpForm({
     <div className={cardClassName}>
       <div className="mb-10 space-y-4">
         <p className="text-[11px] uppercase tracking-[0.45em] text-primary/60">RSVP</p>
-        <h3 className="text-3xl font-serif text-foreground md:text-4xl">{title}</h3>
+        <h3 className="font-serif text-3xl text-foreground md:text-4xl">{title}</h3>
         <p className="max-w-2xl text-sm leading-7 text-foreground/70">{description}</p>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-7">
 
-          {/* Nom & Prénom */}
+          {/* ── 1. Présence ── */}
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">
+                  Serez-vous des nôtres ?
+                </FormLabel>
+                <FormControl>
+                  <PresenceToggle value={field.value} onChange={field.onChange} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* ── 2. Prénom / Nom ── */}
           <div className="grid gap-5 md:grid-cols-2">
             <FormField
               control={form.control}
               name="firstName"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Prénom</FormLabel>
+                  <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">
+                    Prénom
+                  </FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-12 rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20" placeholder="Votre prénom" />
+                    <Input
+                      {...field}
+                      className="h-12 rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20"
+                      placeholder="Votre prénom"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -153,9 +270,15 @@ export default function RsvpForm({
               name="lastName"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Nom</FormLabel>
+                  <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">
+                    Nom
+                  </FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-12 rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20" placeholder="Votre nom" />
+                    <Input
+                      {...field}
+                      className="h-12 rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20"
+                      placeholder="Votre nom"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -163,16 +286,24 @@ export default function RsvpForm({
             />
           </div>
 
-          {/* Email & Téléphone */}
+          {/* ── 3. Email / Téléphone ── */}
           <div className="grid gap-5 md:grid-cols-2">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Email</FormLabel>
+                  <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">
+                    Email
+                  </FormLabel>
                   <FormControl>
-                    <Input {...field} type="email" value={field.value || ""} className="h-12 rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20" placeholder="vous@email.com" />
+                    <Input
+                      {...field}
+                      type="email"
+                      value={field.value || ""}
+                      className="h-12 rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20"
+                      placeholder="vous@email.com"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -183,59 +314,15 @@ export default function RsvpForm({
               name="phone"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Téléphone</FormLabel>
-                  <FormControl>
-                    <Input {...field} value={field.value || ""} className="h-12 rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20" placeholder="+243 ..." />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          {/* Présence & Nombre */}
-          <div className="grid gap-5 md:grid-cols-[1.3fr_0.7fr]">
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Votre réponse</FormLabel>
-                  <FormControl>
-                    <RadioGroup onValueChange={field.onChange} value={field.value} className="grid gap-3 md:grid-cols-2">
-                      <FormItem className="flex items-center gap-3 border border-primary/10 p-4">
-                        <FormControl>
-                          <RadioGroupItem value="confirmed" className="border-primary/30 text-primary" />
-                        </FormControl>
-                        <FormLabel className="cursor-pointer text-sm font-medium text-foreground">Je serai présent(e)</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center gap-3 border border-primary/10 p-4">
-                        <FormControl>
-                          <RadioGroupItem value="declined" className="border-primary/30 text-primary" />
-                        </FormControl>
-                        <FormLabel className="cursor-pointer text-sm font-medium text-foreground">Je ne pourrai pas venir</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="guestCount"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Nombre de places</FormLabel>
+                  <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">
+                    Téléphone
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      type="number"
-                      min={1}
-                      max={10}
-                      value={field.value ?? 1}
-                      onChange={(e) => field.onChange(Number.parseInt(e.target.value || "1", 10))}
+                      value={field.value || ""}
                       className="h-12 rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20"
+                      placeholder="+243 ..."
                     />
                   </FormControl>
                   <FormMessage />
@@ -244,42 +331,74 @@ export default function RsvpForm({
             />
           </div>
 
-          {/* Choix repas */}
-          <FormField
-            control={form.control}
-            name="mealChoice"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Disponibilité</FormLabel>
-                <FormControl>
-                  <RadioGroup onValueChange={field.onChange} value={field.value || ""} className="flex flex-wrap gap-3">
-                    {MEAL_OPTIONS.map((opt) => (
-                      <FormItem key={opt.value} className="flex items-center gap-3 border border-primary/10 px-5 py-3">
-                        <FormControl>
-                          <RadioGroupItem value={opt.value} className="border-primary/30 text-primary" />
-                        </FormControl>
-                        <FormLabel className="cursor-pointer text-sm font-medium text-foreground">{opt.label}</FormLabel>
-                      </FormItem>
-                    ))}
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* ── 4. Nombre de places & Disponibilité — affichés seulement si confirmé ── */}
+          {statusValue === "confirmed" && (
+            <div className="grid gap-5 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="guestCount"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">
+                      Nombre de places
+                    </FormLabel>
+                    <FormControl>
+                      <StyledSelect
+                        value={String(field.value ?? 1)}
+                        onChange={(v) => field.onChange(Number(v))}
+                      >
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                          <option key={n} value={n}>
+                            {n} {n === 1 ? "personne" : "personnes"}
+                          </option>
+                        ))}
+                      </StyledSelect>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="mealChoice"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">
+                      Disponibilité
+                    </FormLabel>
+                    <FormControl>
+                      <StyledSelect
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        placeholder="Choisir..."
+                      >
+                        <option value="journee">Journée uniquement</option>
+                        <option value="soiree">Soirée uniquement</option>
+                        <option value="les-deux">Journée & soirée</option>
+                      </StyledSelect>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
 
-          {/* Message */}
+          {/* ── 5. Message ── */}
           <FormField
             control={form.control}
             name="message"
             render={({ field }) => (
               <FormItem className="space-y-3">
-                <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Un mot pour les mariés</FormLabel>
+                <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">
+                  Un mot pour les mariés{" "}
+                  <span className="normal-case tracking-normal opacity-50">(facultatif)</span>
+                </FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
                     value={field.value || ""}
-                    className="min-h-[120px] rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20"
+                    className="min-h-[110px] rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20"
                     placeholder="Une bénédiction, une pensée, un mot doux..."
                   />
                 </FormControl>
@@ -291,7 +410,7 @@ export default function RsvpForm({
           <Button
             type="submit"
             disabled={mutation.isPending}
-            className="w-full rounded-none bg-primary py-7 uppercase tracking-[0.4em] text-[10px] text-primary-foreground hover:bg-foreground"
+            className="w-full rounded-none bg-primary py-7 text-[10px] uppercase tracking-[0.4em] text-primary-foreground hover:bg-foreground"
           >
             {mutation.isPending ? "Envoi en cours..." : submitLabel}
           </Button>
