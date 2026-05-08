@@ -2,16 +2,16 @@ export const kecha2026 = {
   brand: "Kecha",
   title: "Ketsia & Chad",
   tagline: "Une promesse silencieuse, magnifiquement tenue.",
-  weddingDate: new Date("2026-06-20T15:00:00+02:00"),
+  weddingDate: new Date("2026-06-20T10:00:00+02:00"),
   date: {
     display: "Samedi 20 Juin 2026",
     iso: "2026-06-20",
-    time: "À partir de 15h00",
+    time: "À partir de 9h30",
   },
   ceremony: {
     blessing: {
       label: "Cérémonie de Bénédiction",
-      time: "15h00",
+      time: "10h00",
       theme: "Shades of White",
       themeNote: "Blanc, beige et toutes les nuances du blanc",
       dress: "Tenue blanche, beige ou crème",
@@ -19,9 +19,9 @@ export const kecha2026 = {
     evening: {
       label: "Soirée",
       time: "19h00",
-      theme: "Shades of Brown",
-      themeNote: "Toutes les nuances de marron",
-      dress: "Tenue marron, caramel, chocolat ou bronze",
+      theme: "Tenue libre",
+      themeNote: "Venez tels que vous êtes — vestimentaire au choix",
+      dress: "Tenue au choix",
     },
   },
   location: "Kinshasa",
@@ -45,7 +45,7 @@ export const kecha2026 = {
     statement:
       "Nous avons la joie de vous convier à la célébration de notre bénédiction. Votre présence donnera à cette journée toute sa profondeur, sa grâce et sa lumière.",
     narrative:
-      "Il y a des amours qui se lisent comme un conte — doucement, page après page, avec une lumière qui ne s'éteint jamais.",
+      "Bien avant que nos regards ne se croisent, Dieu murmurait déjà nos prénoms dans le secret de Son cœur. Il écrivait, avec douceur et précision, une histoire que nous ne comprenions pas encore… mais qui nous conduisait l'un vers l'autre.",
   },
   hero: {
     eyebrow: "Invitation officielle · Kinshasa",
@@ -74,27 +74,27 @@ export const kecha2026 = {
   ],
   programme: [
     {
-      time: "14h30",
+      time: "9h30",
       title: "Accueil des invités",
-      body: "Arrivée et installation. Nous vous recommandons d'arriver 30 minutes avant le début.",
+      body: "Arrivée et installation. Nous vous recommandons d'arriver 30 minutes avant le début de la cérémonie.",
       theme: "blessing" as "blessing" | "evening",
     },
     {
-      time: "15h00",
+      time: "10h00",
       title: "Cérémonie de Bénédiction",
       body: "Célébration devant Dieu et ceux que nous aimons. Tenue : Shades of White.",
       theme: "blessing" as "blessing" | "evening",
     },
     {
-      time: "17h30",
+      time: "12h00",
       title: "Cocktail",
-      body: "Un moment de joie et de convivialité entre familles et amis.",
+      body: "Un moment de joie et de convivialité entre familles et amis, de 12h à 13h.",
       theme: "blessing" as "blessing" | "evening",
     },
     {
       time: "19h00",
       title: "Soirée",
-      body: "Dîner, musique et célébration dans une atmosphère chaude et intime. Tenue : Shades of Brown.",
+      body: "Dîner, musique et célébration dans une atmosphère chaude et intime.",
       theme: "evening" as "blessing" | "evening",
     },
     {
@@ -115,11 +115,11 @@ export const kecha2026 = {
     },
     evening: {
       label: "Soirée",
-      theme: "Shades of Brown",
-      description: "Marron, caramel, chocolat, moka, bronze, cognac, noisette — toutes les nuances de marron.",
-      colors: ["#3B1E08", "#6B3F1E", "#8B5E3C", "#B07D50", "#C4925A", "#D4AA80"],
-      colorNames: ["Chocolat", "Moka", "Cognac", "Caramel", "Bronze", "Noisette"],
-      forbidden: "Blanc et nuances claires réservées à la cérémonie. Couleurs vives évitées.",
+      theme: "Tenue libre",
+      description: "Pour la soirée, les invités sont libres de choisir leur tenue. Venez comme vous vous sentez le plus élégants — aucune contrainte de couleur.",
+      colors: [] as string[],
+      colorNames: [] as string[],
+      forbidden: "",
     },
   },
   venues: [
@@ -128,7 +128,7 @@ export const kecha2026 = {
       name: "Galerie Palanca",
       address: "Avenue de l'Avenir, Chanic",
       city: "Kinshasa",
-      note: "Merci d'arriver 30 minutes avant le début de la cérémonie.",
+      note: "Merci d'arriver à 9h30, soit 30 minutes avant le début de la cérémonie.",
       theme: "blessing" as "blessing" | "evening",
       mapsUrl: "https://maps.google.com/?q=Kinshasa",
     },
@@ -157,11 +157,11 @@ export const kecha2026 = {
     },
     {
       q: "Le dress code est-il strict ?",
-      a: "Oui, il est important pour la cohérence visuelle de l'événement. Cérémonie : Shades of White (blanc, beige, crème, ivoire). Soirée : Shades of Brown (marron, caramel, chocolat, bronze). Merci de le respecter.",
+      a: "Pour la cérémonie de bénédiction : Shades of White (blanc, beige, crème, ivoire). Pour la soirée : tenue libre — venez comme vous vous sentez le plus élégants, sans contrainte de couleur.",
     },
     {
       q: "À quelle heure dois-je arriver ?",
-      a: "Nous vous recommandons d'arriver à 14h30, soit 30 minutes avant le début de la cérémonie fixée à 15h00. La cérémonie débutera à l'heure précise.",
+      a: "Nous vous recommandons d'arriver à 9h30, soit 30 minutes avant le début de la cérémonie fixée à 10h00. La cérémonie débutera à l'heure précise.",
     },
     {
       q: "Comment accéder au lieu ?",

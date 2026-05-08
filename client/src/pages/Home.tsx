@@ -412,7 +412,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-5">
-              {kecha2026.programme.filter((e) => ["15h00", "19h00"].includes(e.time)).map((e) => (
+              {kecha2026.programme.filter((e) => ["10h00", "19h00"].includes(e.time)).map((e) => (
                 <div key={e.time} className="border-l-2 pl-5" style={{ borderColor: "rgba(196,170,128,0.25)" }}>
                   <p className="text-[9px] uppercase tracking-[0.45em] text-white/38">{e.title}</p>
                   <p className="mt-1 font-serif text-lg text-white/85">{e.time} · Kinshasa</p>
@@ -534,7 +534,7 @@ export default function Home() {
               className="p-8 editorial-shadow"
               style={{ background: "#FAF6EE", border: "1px solid rgba(196,170,128,0.28)" }}
             >
-              <p className="text-[9px] uppercase tracking-[0.58em]" style={{ color: "#A89070" }}>Cérémonie · 15h00</p>
+              <p className="text-[9px] uppercase tracking-[0.58em]" style={{ color: "#A89070" }}>Cérémonie · 10h00</p>
               <h3 className="mt-3 font-serif text-2xl" style={{ color: "#2C2118" }}>{kecha2026.dresscode.blessing.theme}</h3>
               <p className="mt-3 text-sm leading-7" style={{ color: "#6A5D50" }}>{kecha2026.dresscode.blessing.description}</p>
 
@@ -569,20 +569,11 @@ export default function Home() {
               <h3 className="mt-3 font-serif text-2xl" style={{ color: "#F0E4D0" }}>{kecha2026.dresscode.evening.theme}</h3>
               <p className="mt-3 text-sm leading-7" style={{ color: "rgba(240,228,208,0.68)" }}>{kecha2026.dresscode.evening.description}</p>
 
-              <div className="mt-6 flex gap-2 flex-wrap">
-                {kecha2026.dresscode.evening.colors.map((color, i) => (
-                  <div key={color} className="group relative">
-                    <div
-                      className="h-9 w-9 border"
-                      style={{ background: color, borderColor: "rgba(196,146,90,0.2)" }}
-                      title={kecha2026.dresscode.evening.colorNames[i]}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-5 border-t pt-4" style={{ borderColor: "rgba(196,146,90,0.12)" }}>
-                <p className="text-[10px] italic" style={{ color: "rgba(196,146,90,0.45)" }}>{kecha2026.dresscode.evening.forbidden}</p>
+              <div className="mt-6 flex items-center gap-3 px-5 py-4" style={{ border: "1px dashed rgba(196,146,90,0.25)" }}>
+                <span className="font-serif text-2xl" style={{ color: "rgba(196,146,90,0.5)" }}>✦</span>
+                <p className="text-sm italic leading-6" style={{ color: "rgba(240,228,208,0.6)" }}>
+                  Venez comme vous vous sentez le plus élégants — aucune contrainte de couleur imposée.
+                </p>
               </div>
             </motion.article>
           </div>
