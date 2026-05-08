@@ -265,12 +265,39 @@ export default function Home() {
         <div className="absolute top-0 inset-x-0 h-px" style={{ background: "linear-gradient(90deg,transparent,rgba(196,170,128,0.28),transparent)" }} />
 
         <div className="mx-auto max-w-5xl px-6 py-24 md:px-10 md:py-28">
-          <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={rv} className="mb-20 text-center">
+          <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={rv} className="mb-14 text-center">
             <Label>Notre histoire</Label>
             <h2 className="mt-5 font-serif leading-tight" style={{ color: "#2C2118", fontSize: "clamp(2rem,5vw,3.5rem)" }}>
               Un conte écrit à deux mains
             </h2>
           </motion.div>
+
+          {/* Poem */}
+          <motion.blockquote
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ ...rv, delay: 0.1 }}
+            className="mx-auto mb-20 max-w-xl text-center"
+          >
+            <div className="space-y-5">
+              {kecha2026.couple.poem.map((stanza, si) => (
+                <p key={si} className="font-serif text-lg leading-9 italic" style={{ color: "#5A4A38" }}>
+                  {stanza.map((line, li) => (
+                    <span key={li}>
+                      {line}
+                      {li < stanza.length - 1 && <br />}
+                    </span>
+                  ))}
+                </p>
+              ))}
+            </div>
+            <div className="mt-8 flex items-center justify-center gap-4" style={{ opacity: 0.28 }}>
+              <div className="h-px w-12" style={{ background: "rgba(196,170,128,1)" }} />
+              <span style={{ color: "#C4AA80" }}>✦</span>
+              <div className="h-px w-12" style={{ background: "rgba(196,170,128,1)" }} />
+            </div>
+          </motion.blockquote>
 
           <div className="relative">
             {/* Vertical line */}

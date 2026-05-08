@@ -46,6 +46,17 @@ export const kecha2026 = {
       "Nous avons la joie de vous convier à la célébration de notre bénédiction. Votre présence donnera à cette journée toute sa profondeur, sa grâce et sa lumière.",
     narrative:
       "Bien avant que nos regards ne se croisent, Dieu murmurait déjà nos prénoms dans le secret de Son cœur. Il écrivait, avec douceur et précision, une histoire que nous ne comprenions pas encore… mais qui nous conduisait l'un vers l'autre.",
+    poem: [
+      [
+        "Bien avant que nos regards ne se croisent,",
+        "Dieu murmurait déjà nos prénoms dans le secret de Son cœur.",
+      ],
+      [
+        "Il écrivait, avec douceur et précision,",
+        "une histoire que nous ne comprenions pas encore…",
+        "mais qui nous conduisait l'un vers l'autre.",
+      ],
+    ],
   },
   hero: {
     eyebrow: "Invitation officielle · Kinshasa",
