@@ -348,7 +348,7 @@ export default function RsvpForm({
                         value={String(field.value ?? 1)}
                         onChange={(v) => field.onChange(Number(v))}
                       >
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                        {[1, 2, 3].map((n) => (
                           <option key={n} value={n}>
                             {n} {n === 1 ? "personne" : "personnes"}
                           </option>
