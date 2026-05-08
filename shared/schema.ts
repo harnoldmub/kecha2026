@@ -69,7 +69,7 @@ export const insertRsvpSchema = createInsertSchema(rsvpResponses, {
     z
       .string()
       .trim()
-      .optional()
+      .min(1, "Numéro de téléphone requis")
       .transform((value) => (value ? value : null)),
   mealChoice: () =>
     z

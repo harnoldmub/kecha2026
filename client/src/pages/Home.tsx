@@ -275,33 +275,32 @@ export default function Home() {
                 Confirmez votre présence.
               </h2>
               <p className="mt-4 text-base leading-8" style={{ color: "rgba(255,255,255,0.55)" }}>
-                Merci de nous indiquer si vous serez parmi nous. C'est simple et rapide.
+                Merci de bien vouloir confirmer votre présence en remplissant le formulaire ci-contre.
               </p>
             </div>
 
-            {/* Step-by-step guide */}
-            <div className="space-y-5">
+            {/* What to fill in */}
+            <div className="space-y-4">
               <p className="text-[9px] uppercase tracking-[0.55em]" style={{ color: "rgba(196,170,128,0.55)" }}>
-                Comment confirmer
+                Veuillez indiquer
               </p>
               {[
-                { n: "1", label: "Choisissez votre réponse", detail: "« Oui, je serai là » ou « Non, je ne peux pas »" },
-                { n: "2", label: "Remplissez vos informations", detail: "Votre prénom, nom et le nombre de personnes" },
-                { n: "3", label: "Appuyez sur le bouton", detail: "« Confirmer ma présence » en bas du formulaire" },
-              ].map((step) => (
-                <div key={step.n} className="flex items-start gap-5">
-                  <span
-                    className="flex h-8 w-8 shrink-0 items-center justify-center font-serif text-base"
-                    style={{ border: "1px solid rgba(196,170,128,0.3)", color: "#C4AA80" }}
-                  >
-                    {step.n}
-                  </span>
-                  <div>
-                    <p className="font-serif text-base text-white/85">{step.label}</p>
-                    <p className="mt-0.5 text-sm leading-6" style={{ color: "rgba(255,255,255,0.4)" }}>{step.detail}</p>
-                  </div>
+                "Votre nom et prénom",
+                "Le nombre de personnes qui vous accompagneront",
+                "Votre numéro de téléphone",
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-4">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "#C4AA80" }} />
+                  <p className="text-base leading-7" style={{ color: "rgba(255,255,255,0.72)" }}>{item}</p>
                 </div>
               ))}
+            </div>
+
+            {/* Deadline */}
+            <div className="border-l-2 pl-5" style={{ borderColor: "rgba(196,170,128,0.35)" }}>
+              <p className="text-sm leading-7 italic" style={{ color: "rgba(255,255,255,0.45)" }}>
+                Nous vous serions reconnaissants de répondre avant le <span className="not-italic font-serif text-white/70">1er Juin 2026</span>.
+              </p>
             </div>
 
             <div className="space-y-5 border-t border-white/10 pt-6">
@@ -319,7 +318,7 @@ export default function Home() {
             <RsvpForm
               variant="invitation"
               title="Répondre à l'invitation"
-              description="Indiquez si vous serez présent(e), le nombre de personnes et vos coordonnées."
+              description="Les champs marqués sont obligatoires. Remplissez puis appuyez sur le bouton en bas."
               successDescription="Merci. Votre réponse a bien été enregistrée. Nous avons hâte de vous accueillir."
             />
           </motion.div>

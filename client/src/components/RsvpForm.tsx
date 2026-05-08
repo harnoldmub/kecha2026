@@ -294,7 +294,8 @@ export default function RsvpForm({
               render={({ field }) => (
                 <FormItem className="space-y-3">
                   <FormLabel className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">
-                    Email
+                    Email{" "}
+                    <span className="normal-case tracking-normal opacity-50">(facultatif)</span>
                   </FormLabel>
                   <FormControl>
                     <Input
