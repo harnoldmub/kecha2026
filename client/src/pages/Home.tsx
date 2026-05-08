@@ -259,7 +259,75 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════════════════
-          2 · NOTRE HISTOIRE — Timeline
+          2 · RSVP — Ultra important
+      ══════════════════════════════════════════════════════ */}
+      <section id="rsvp" style={{ background: "#1A1008" }} className="relative overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse at 50% 0%,rgba(196,170,128,0.07) 0%,transparent 55%)" }}
+        />
+        <div className="relative mx-auto grid max-w-6xl gap-14 px-6 py-24 md:px-10 md:py-28 lg:grid-cols-[1fr_1.5fr]">
+
+          <motion.div initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={rv} className="space-y-8 text-white">
+            <div>
+              <Label dark>RSVP</Label>
+              <h2 className="mt-5 font-serif leading-tight text-white" style={{ fontSize: "clamp(2rem,4.5vw,3rem)" }}>
+                Confirmez votre présence.
+              </h2>
+              <p className="mt-4 text-base leading-8" style={{ color: "rgba(255,255,255,0.55)" }}>
+                Merci de nous indiquer si vous serez parmi nous. C'est simple et rapide.
+              </p>
+            </div>
+
+            {/* Step-by-step guide */}
+            <div className="space-y-5">
+              <p className="text-[9px] uppercase tracking-[0.55em]" style={{ color: "rgba(196,170,128,0.55)" }}>
+                Comment confirmer
+              </p>
+              {[
+                { n: "1", label: "Choisissez votre réponse", detail: "« Oui, je serai là » ou « Non, je ne peux pas »" },
+                { n: "2", label: "Remplissez vos informations", detail: "Votre prénom, nom et le nombre de personnes" },
+                { n: "3", label: "Appuyez sur le bouton", detail: "« Confirmer ma présence » en bas du formulaire" },
+              ].map((step) => (
+                <div key={step.n} className="flex items-start gap-5">
+                  <span
+                    className="flex h-8 w-8 shrink-0 items-center justify-center font-serif text-base"
+                    style={{ border: "1px solid rgba(196,170,128,0.3)", color: "#C4AA80" }}
+                  >
+                    {step.n}
+                  </span>
+                  <div>
+                    <p className="font-serif text-base text-white/85">{step.label}</p>
+                    <p className="mt-0.5 text-sm leading-6" style={{ color: "rgba(255,255,255,0.4)" }}>{step.detail}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-5 border-t border-white/10 pt-6">
+              {kecha2026.programme.filter((e) => ["10h00", "19h00"].includes(e.time)).map((e) => (
+                <div key={e.time} className="border-l-2 pl-5" style={{ borderColor: "rgba(196,170,128,0.25)" }}>
+                  <p className="text-[9px] uppercase tracking-[0.45em] text-white/38">{e.title}</p>
+                  <p className="mt-1 font-serif text-lg text-white/85">{e.time} · Kinshasa</p>
+                  <p className="text-[10px] italic text-white/40">{e.theme === "blessing" ? kecha2026.ceremony.blessing.theme : kecha2026.ceremony.evening.theme}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ ...rv, delay: 0.1 }}>
+            <RsvpForm
+              variant="invitation"
+              title="Répondre à l'invitation"
+              description="Indiquez si vous serez présent(e), le nombre de personnes et vos coordonnées."
+              successDescription="Merci. Votre réponse a bien été enregistrée. Nous avons hâte de vous accueillir."
+            />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════
+          3 · NOTRE HISTOIRE — Timeline
       ══════════════════════════════════════════════════════ */}
       <section id="histoire" style={{ background: "linear-gradient(160deg,#FAF6EE 0%,#EEE4D2 100%)" }} className="relative overflow-hidden">
         <div className="absolute top-0 inset-x-0 h-px" style={{ background: "linear-gradient(90deg,transparent,rgba(196,170,128,0.28),transparent)" }} />
@@ -416,52 +484,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════
-          4 · RSVP — Ultra important
-      ══════════════════════════════════════════════════════ */}
-      <section id="rsvp" style={{ background: "#1A1008" }} className="relative overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at 50% 0%,rgba(196,170,128,0.07) 0%,transparent 55%)" }}
-        />
-        <div className="relative mx-auto grid max-w-6xl gap-14 px-6 py-24 md:px-10 md:py-28 lg:grid-cols-[1fr_1.5fr]">
-
-          <motion.div initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={rv} className="space-y-8 text-white">
-            <div>
-              <Label dark>RSVP</Label>
-              <h2 className="mt-5 font-serif leading-tight text-white" style={{ fontSize: "clamp(2rem,4.5vw,3rem)" }}>
-                Confirmez votre présence.
-              </h2>
-              <p className="mt-5 text-base leading-8 text-white/65">{kecha2026.couple.narrative}</p>
-            </div>
-
-            <div className="space-y-5">
-              {kecha2026.programme.filter((e) => ["10h00", "19h00"].includes(e.time)).map((e) => (
-                <div key={e.time} className="border-l-2 pl-5" style={{ borderColor: "rgba(196,170,128,0.25)" }}>
-                  <p className="text-[9px] uppercase tracking-[0.45em] text-white/38">{e.title}</p>
-                  <p className="mt-1 font-serif text-lg text-white/85">{e.time} · Kinshasa</p>
-                  <p className="text-[10px] italic text-white/40">{e.theme === "blessing" ? kecha2026.ceremony.blessing.theme : kecha2026.ceremony.evening.theme}</p>
-                </div>
-              ))}
-            </div>
-
-            <blockquote className="border-t border-white/10 pt-6">
-              <p className="font-serif text-sm italic leading-7 text-white/55">« {kecha2026.scripture[0].text} »</p>
-              <p className="mt-3 text-[9px] uppercase tracking-[0.45em] text-white/30">— {kecha2026.scripture[0].reference}</p>
-            </blockquote>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ ...rv, delay: 0.1 }}>
-            <RsvpForm
-              variant="invitation"
-              title="Répondre à l'invitation"
-              description="Confirmer votre présence, indiquer le nombre de places et vos préférences alimentaires."
-              successDescription="Merci. Votre réponse a bien été enregistrée. Nous avons hâte de vous accueillir."
-            />
-          </motion.div>
         </div>
       </section>
 
