@@ -39,6 +39,7 @@ const defaultValues: RsvpFormInput = {
   guestCount: 1,
   mealChoice: "",
   message: "",
+  escort: "",
 };
 
 /* ─── Styled native select ──────────────────────────────────── */
@@ -348,11 +349,8 @@ export default function RsvpForm({
                         value={String(field.value ?? 1)}
                         onChange={(v) => field.onChange(Number(v))}
                       >
-                        {[1, 2, 3].map((n) => (
-                          <option key={n} value={n}>
-                            {n} {n === 1 ? "personne" : "personnes"}
-                          </option>
-                        ))}
+                        <option value={1}>Seul(e)</option>
+                        <option value={2}>Avec un(e) accompagnant(e)</option>
                       </StyledSelect>
                     </FormControl>
                     <FormMessage />

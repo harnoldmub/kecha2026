@@ -11,6 +11,7 @@ import {
   Pencil,
   RefreshCw,
   Search,
+  Send,
   ShieldCheck,
   Trash2,
   UserPlus,
@@ -60,6 +61,7 @@ const emptyGuestForm: GuestFormState = {
   guestCount: 1,
   mealChoice: "",
   message: "",
+  escort: "",
 };
 
 async function getCurrentUser() {
@@ -212,6 +214,7 @@ export default function Admin() {
       guestCount: guest.guestCount || 1,
       mealChoice: guest.mealChoice || "",
       message: guest.message || "",
+      escort: guest.escort || "",
     });
     setModalOpen(true);
   }
@@ -442,8 +445,13 @@ export default function Admin() {
                           {guest.status === "confirmed" ? "Confirmé" : guest.status === "declined" ? "Décliné" : "En attente"}
                         </Badge>
                         <p className="mt-3 text-sm leading-7 text-foreground/65">
-                          {guest.guestCount} place{guest.guestCount > 1 ? "s" : ""}
+                          {guest.guestCount === 1 ? "Seul(e)" : "En couple"}
                         </p>
+                        {guest.escort ? (
+                          <p className="mt-1 text-sm leading-7 text-foreground/80">
+                            + {guest.escort}
+                          </p>
+                        ) : null}
                         {guest.mealChoice ? (
                           <p className="mt-1 text-[10px] uppercase tracking-[0.3em] text-foreground/45">
                             {guest.mealChoice === "journee" ? "Journée"
@@ -475,10 +483,19 @@ export default function Admin() {
 
                       <TableCell className="min-w-[240px] py-6">
                         <div className="space-y-3">
-                          <p className="line-clamp-3 break-all text-sm leading-7 text-foreground/65">
+                          <p className="line-clamp-2 break-all text-xs leading-6 text-foreground/45">
                             {guest.invitationUrl || `${window.location.origin}/invitation/${guest.token}`}
                           </p>
                           <div className="flex flex-wrap gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              onClick={() => copyInvitationLink(guest)}
+                              className="rounded-none bg-primary px-4 text-[10px] uppercase tracking-[0.25em] text-primary-foreground hover:bg-foreground"
+                            >
+                              <Send className="mr-2 h-3.5 w-3.5" strokeWidth={1.6} />
+                              Envoyer le lien
+                            </Button>
                             <Button
                               type="button"
                               size="sm"
@@ -638,16 +655,33 @@ export default function Admin() {
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Nombre de places</label>
-                <Input
-                  type="number"
-                  min={1}
-                  max={10}
-                  value={guestForm.guestCount}
-                  onChange={(e) => setGuestForm((c) => ({ ...c, guestCount: Number.parseInt(e.target.value || "1", 10) }))}
-                  className="h-12 rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20"
-                />
+                <label className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">Présence</label>
+                <select
+                  value={String(guestForm.guestCount ?? 1)}
+                  onChange={(e) => setGuestForm((c) => ({ ...c, guestCount: Number(e.target.value) }))}
+                  className="h-12 w-full rounded-none border border-primary/15 bg-transparent px-3 text-sm outline-none focus:border-primary"
+                >
+                  <option value="1">Seul(e)</option>
+                  <option value="2">En couple</option>
+                  <option value="3">3 personnes</option>
+                  <option value="4">4 personnes</option>
+                  <option value="5">5 personnes</option>
+                  <option value="6">6 personnes</option>
+                  <option value="10">10 personnes</option>
+                </select>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">
+                Escorte <span className="normal-case tracking-normal text-foreground/40">(nom de l'accompagnant)</span>
+              </label>
+              <Input
+                value={guestForm.escort || ""}
+                onChange={(e) => setGuestForm((c) => ({ ...c, escort: e.target.value }))}
+                className="h-12 rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20"
+                placeholder="Prénom et nom de l'accompagnant..."
+              />
             </div>
 
             <div className="space-y-2">

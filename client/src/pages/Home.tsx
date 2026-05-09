@@ -316,7 +316,7 @@ export default function Home() {
               variant="page"
               title="Répondre à l'invitation"
               description="Les champs marqués sont obligatoires. Remplissez puis appuyez sur le bouton en bas."
-              successDescription="Merci. Votre réponse a bien été enregistrée. Nous avons hâte de vous accueillir."
+              successDescription="Votre réponse a bien été enregistrée. Vous serez recontacté(e) directement."
             />
           </motion.div>
         </div>

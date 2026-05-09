@@ -45,7 +45,8 @@ export const rsvpResponses = pgTable("rsvp_responses", {
   guestCount: integer("guest_count").notNull().default(1),
   mealChoice: varchar("meal_choice", { length: 100 }),
   message: text("message"), // Optional message from guest
-  
+  escort: varchar("escort", { length: 200 }), // Name of accompanying guest
+
   // Invitation & Check-in
   token: varchar("token").unique().notNull(), // For personalized invitation links
   invitationSentAt: timestamp("invitation_sent_at"),
@@ -86,7 +87,13 @@ export const insertRsvpSchema = createInsertSchema(rsvpResponses, {
   firstName: (schema) => schema.min(1, "Prénom requis"),
   lastName: (schema) => schema.min(1, "Nom requis"),
   status: () => z.enum(["pending", "confirmed", "declined"]).default("confirmed"),
-  guestCount: (schema) => schema.min(1, "Au moins 1 personne").max(3, "Maximum 3 personnes"),
+  guestCount: (schema) => schema.min(1, "Au moins 1 personne").max(2, "Maximum 2 personnes"),
+  escort: () =>
+    z
+      .string()
+      .trim()
+      .optional()
+      .transform((value) => (value ? value : null)),
 }).omit({
   token: true,
   invitationSentAt: true,
@@ -97,6 +104,7 @@ export const insertRsvpSchema = createInsertSchema(rsvpResponses, {
 
 export const adminGuestSchema = insertRsvpSchema.extend({
   status: z.enum(["pending", "confirmed", "declined"]).default("pending"),
+  guestCount: z.number().int().min(1).max(20).default(1),
 });
 
 export const updateGuestSchema = adminGuestSchema.partial();
