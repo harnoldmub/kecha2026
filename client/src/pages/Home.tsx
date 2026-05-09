@@ -261,27 +261,24 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           2 · RSVP — Ultra important
       ══════════════════════════════════════════════════════ */}
-      <section id="rsvp" style={{ background: "#1A1008" }} className="relative overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at 50% 0%,rgba(196,170,128,0.07) 0%,transparent 55%)" }}
-        />
+      <section id="rsvp" style={{ background: "#F8F3EA" }} className="relative overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px" style={{ background: "linear-gradient(90deg,transparent,rgba(196,170,128,0.28),transparent)" }} />
         <div className="relative mx-auto grid max-w-6xl gap-14 px-6 py-24 md:px-10 md:py-28 lg:grid-cols-[1fr_1.5fr]">
 
-          <motion.div initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={rv} className="space-y-8 text-white">
+          <motion.div initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={rv} className="space-y-8">
             <div>
-              <Label dark>RSVP</Label>
-              <h2 className="mt-5 font-serif leading-tight text-white" style={{ fontSize: "clamp(2rem,4.5vw,3rem)" }}>
+              <Label>RSVP</Label>
+              <h2 className="mt-5 font-serif leading-tight" style={{ color: "#2C2118", fontSize: "clamp(2rem,4.5vw,3rem)" }}>
                 Confirmez votre présence.
               </h2>
-              <p className="mt-4 text-base leading-8" style={{ color: "rgba(255,255,255,0.55)" }}>
+              <p className="mt-4 text-base leading-8" style={{ color: "#6A5D50" }}>
                 Merci de bien vouloir confirmer votre présence en remplissant le formulaire ci-contre.
               </p>
             </div>
 
             {/* What to fill in */}
             <div className="space-y-4">
-              <p className="text-[9px] uppercase tracking-[0.55em]" style={{ color: "rgba(196,170,128,0.55)" }}>
+              <p className="text-[9px] uppercase tracking-[0.55em]" style={{ color: "#A89070" }}>
                 Veuillez indiquer
               </p>
               {[
@@ -291,24 +288,24 @@ export default function Home() {
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-4">
                   <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "#C4AA80" }} />
-                  <p className="text-base leading-7" style={{ color: "rgba(255,255,255,0.72)" }}>{item}</p>
+                  <p className="text-base leading-7" style={{ color: "#3C2E22" }}>{item}</p>
                 </div>
               ))}
             </div>
 
             {/* Deadline */}
-            <div className="border-l-2 pl-5" style={{ borderColor: "rgba(196,170,128,0.35)" }}>
-              <p className="text-sm leading-7 italic" style={{ color: "rgba(255,255,255,0.45)" }}>
-                Nous vous serions reconnaissants de répondre avant le <span className="not-italic font-serif text-white/70">1er Juin 2026</span>.
+            <div className="border-l-2 pl-5" style={{ borderColor: "rgba(196,170,128,0.5)" }}>
+              <p className="text-sm leading-7 italic" style={{ color: "#8A7A68" }}>
+                Nous vous serions reconnaissants de répondre avant le <span className="not-italic font-serif" style={{ color: "#3C2E22" }}>1er Juin 2026</span>.
               </p>
             </div>
 
-            <div className="space-y-5 border-t border-white/10 pt-6">
+            <div className="space-y-5 border-t pt-6" style={{ borderColor: "rgba(196,170,128,0.25)" }}>
               {kecha2026.programme.filter((e) => ["10h00", "19h00"].includes(e.time)).map((e) => (
-                <div key={e.time} className="border-l-2 pl-5" style={{ borderColor: "rgba(196,170,128,0.25)" }}>
-                  <p className="text-[9px] uppercase tracking-[0.45em] text-white/38">{e.title}</p>
-                  <p className="mt-1 font-serif text-lg text-white/85">{e.time} · Kinshasa</p>
-                  <p className="text-[10px] italic text-white/40">{e.theme === "blessing" ? kecha2026.ceremony.blessing.theme : kecha2026.ceremony.evening.theme}</p>
+                <div key={e.time} className="border-l-2 pl-5" style={{ borderColor: "rgba(196,170,128,0.45)" }}>
+                  <p className="text-[9px] uppercase tracking-[0.45em]" style={{ color: "#A89070" }}>{e.title}</p>
+                  <p className="mt-1 font-serif text-lg" style={{ color: "#2C2118" }}>{e.time} · Kinshasa</p>
+                  <p className="text-[10px] italic" style={{ color: "#9A8A76" }}>{e.theme === "blessing" ? kecha2026.ceremony.blessing.theme : kecha2026.ceremony.evening.theme}</p>
                 </div>
               ))}
             </div>
@@ -316,7 +313,7 @@ export default function Home() {
 
           <motion.div initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ ...rv, delay: 0.1 }}>
             <RsvpForm
-              variant="invitation"
+              variant="page"
               title="Répondre à l'invitation"
               description="Les champs marqués sont obligatoires. Remplissez puis appuyez sur le bouton en bas."
               successDescription="Merci. Votre réponse a bien été enregistrée. Nous avons hâte de vous accueillir."
