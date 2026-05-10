@@ -674,13 +674,13 @@ export default function Admin() {
 
             <div className="space-y-2">
               <label className="text-[10px] uppercase tracking-[0.3em] text-foreground/60">
-                Escorte <span className="normal-case tracking-normal text-foreground/40">(nom de l'accompagnant)</span>
+                Accompagnant(e) <span className="normal-case tracking-normal text-foreground/40">(facultatif)</span>
               </label>
               <Input
                 value={guestForm.escort || ""}
                 onChange={(e) => setGuestForm((c) => ({ ...c, escort: e.target.value }))}
                 className="h-12 rounded-none border-primary/15 bg-transparent focus-visible:ring-primary/20"
-                placeholder="Prénom et nom de l'accompagnant..."
+                placeholder="Prénom et nom de l'accompagnant(e)..."
               />
             </div>
 
