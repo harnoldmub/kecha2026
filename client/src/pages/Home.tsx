@@ -10,6 +10,7 @@ import heroImg from "../../images/hero.jpeg";
 import kecha1Img from "../../images/kecha1.jpeg";
 import kecha2Img from "../../images/kecha2.jpeg";
 import heroVideo from "../../images/hero-kecha.mp4";
+import shadeOfWhiteImg from "../../images/shade-of-white.jpeg";
 
 const IMAGES = { hero: heroImg, kecha1: kecha1Img, kecha2: kecha2Img } as Record<string, string>;
 const rv = { duration: 1.05, ease: [0.22, 1, 0.36, 1] as const };
@@ -570,34 +571,57 @@ export default function Home() {
           </motion.div>
 
           <div className="grid gap-8 md:grid-cols-2">
-            {/* Blessing */}
+            {/* Blessing — Shade of White */}
             <motion.article
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
+              viewport={{ once: true, amount: 0.3 }}
               transition={rv}
-              className="p-8 editorial-shadow"
-              style={{ background: "#FAF6EE", border: "1px solid rgba(196,170,128,0.28)" }}
+              className="overflow-hidden editorial-shadow"
+              style={{ border: "1px solid rgba(196,170,128,0.28)" }}
             >
-              <p className="text-[9px] uppercase tracking-[0.58em]" style={{ color: "#A89070" }}>Cérémonie · 10h00</p>
-              <h3 className="mt-3 font-serif text-2xl" style={{ color: "#2C2118" }}>{kecha2026.dresscode.blessing.theme}</h3>
-              <p className="mt-3 text-sm leading-7" style={{ color: "#6A5D50" }}>{kecha2026.dresscode.blessing.description}</p>
-
-              {/* Color swatches */}
-              <div className="mt-6 flex gap-2 flex-wrap">
-                {kecha2026.dresscode.blessing.colors.map((color, i) => (
-                  <div key={color} className="group relative">
-                    <div
-                      className="h-9 w-9 border"
-                      style={{ background: color, borderColor: "rgba(196,170,128,0.25)" }}
-                      title={kecha2026.dresscode.blessing.colorNames[i]}
-                    />
-                  </div>
-                ))}
+              {/* Mood photo */}
+              <div className="relative h-72 overflow-hidden">
+                <img
+                  src={shadeOfWhiteImg}
+                  alt="Shade of White mood"
+                  className="h-full w-full object-cover"
+                  style={{ objectPosition: "center 20%" }}
+                />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.42) 100%)" }} />
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <p className="font-serif text-3xl text-white" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.35)" }}>
+                    Shades of White 🤍
+                  </p>
+                </div>
               </div>
 
-              <div className="mt-5 border-t pt-4" style={{ borderColor: "rgba(196,170,128,0.18)" }}>
-                <p className="text-[10px] text-red-800/50 italic">{kecha2026.dresscode.blessing.forbidden}</p>
+              {/* Content */}
+              <div className="p-8" style={{ background: "#FAF6EE" }}>
+                <p className="text-[9px] uppercase tracking-[0.58em]" style={{ color: "#A89070" }}>Cérémonie · 10h00</p>
+                <p className="mt-3 text-sm leading-7" style={{ color: "#6A5D50" }}>
+                  {kecha2026.dresscode.blessing.description}
+                </p>
+
+                {/* Color swatches */}
+                <div className="mt-5 flex gap-2 flex-wrap">
+                  {kecha2026.dresscode.blessing.colors.map((color, i) => (
+                    <div
+                      key={color}
+                      className="h-8 w-8 border"
+                      style={{ background: color, borderColor: "rgba(196,170,128,0.35)" }}
+                      title={kecha2026.dresscode.blessing.colorNames[i]}
+                    />
+                  ))}
+                </div>
+
+                {/* Warning */}
+                <div className="mt-5 flex items-start gap-3 border-t pt-4" style={{ borderColor: "rgba(196,170,128,0.22)" }}>
+                  <span className="mt-0.5 text-base">⚠️</span>
+                  <p className="text-[11px] leading-6" style={{ color: "#8B3A3A" }}>
+                    Pas de couleur marron. Uniquement des tons blancs.
+                  </p>
+                </div>
               </div>
             </motion.article>
 
