@@ -602,6 +602,21 @@ export default function Home() {
                   {kecha2026.dresscode.blessing.description}
                 </p>
 
+                {/* Color swatches */}
+                <div className="mt-6 grid grid-cols-6 gap-2">
+                  {kecha2026.dresscode.blessing.colors.map((color, i) => (
+                    <div key={color} className="flex flex-col items-center gap-2">
+                      <div
+                        className="w-full border"
+                        style={{ aspectRatio: "1/1.4", background: color, borderColor: "rgba(196,170,128,0.3)" }}
+                      />
+                      <p className="text-center text-[8px] uppercase tracking-[0.3em] leading-4" style={{ color: "#A89070" }}>
+                        {kecha2026.dresscode.blessing.colorNames[i]}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
                 {/* Warning */}
                 <div className="mt-5 flex items-start gap-3 border-t pt-4" style={{ borderColor: "rgba(196,170,128,0.22)" }}>
                   <span className="mt-0.5 text-base">⚠️</span>
