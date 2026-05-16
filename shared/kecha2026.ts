@@ -120,8 +120,8 @@ export const kecha2026 = {
       label: "Cérémonie de Bénédiction",
       theme: "Shades of White",
       description: "Blanc, beige, ivoire, crème, champagne, écru — toutes les nuances du blanc sont les bienvenues.",
-      colors: ["#FFFFFF", "#FAF7F0", "#F5ECD7", "#EDE0CB", "#E8D5B0", "#D4C4A0"],
-      colorNames: ["Blanc pur", "Ivoire", "Champagne", "Lin", "Crème dorée", "Sable"],
+      colors: ["#FFFFFF", "#F7F3EC", "#EFE5D2", "#E5D5B8", "#D8C9A3", "#C9B890"],
+      colorNames: ["Blanc pur", "Blanc cassé", "Ivoire chaud", "Champagne", "Lin / Écru", "Sable doré"],
       forbidden: "Couleurs vives, noires ou marron strictement évitées.",
     },
     evening: {
