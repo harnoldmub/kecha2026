@@ -390,12 +390,11 @@ export default function Home() {
 
                   {/* Image side */}
                   {chapter.image ? (
-                    <div className="overflow-hidden editorial-shadow">
+                    <div className="overflow-hidden editorial-shadow" style={{ aspectRatio: "3/4" }}>
                       <motion.img
                         src={IMAGES[chapter.image]}
                         alt={chapter.title}
-                        className="w-full object-cover"
-                        style={{ height: "clamp(280px,40vw,440px)" }}
+                        className="h-full w-full object-cover"
                         initial={{ scale: 1.08 }}
                         whileInView={{ scale: 1 }}
                         viewport={{ once: true, amount: 0.35 }}
@@ -406,7 +405,7 @@ export default function Home() {
                     /* Decorative placeholder for chapters without image */
                     <div
                       className="flex items-center justify-center editorial-shadow"
-                      style={{ height: "clamp(200px,30vw,320px)", background: "linear-gradient(135deg,#F5EDE0,#EDE3D5)" }}
+                      style={{ aspectRatio: "3/4", background: "linear-gradient(135deg,#F5EDE0,#EDE3D5)" }}
                     >
                       <p className="font-script text-6xl" style={{ color: "rgba(122,101,80,0.25)" }}>Kecha</p>
                     </div>
