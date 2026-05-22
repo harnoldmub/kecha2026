@@ -1,9 +1,8 @@
 import type { Express, NextFunction, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { adminGuestSchema, insertRsvpSchema, updateGuestSchema } from "@shared/schema";
+import { adminGuestSchema, publicRsvpSchema, updateGuestSchema } from "@shared/schema";
 import { nanoid } from "nanoid";
-import { sendRsvpConfirmationEmail } from "./email";
 import { ensureAdminUser, setupAuth } from "./auth";
 
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -30,6 +29,29 @@ function buildInvitationLink(req: Request, token: string) {
 
 function getInvitationStatus(guest: { invitationSentAt: Date | null }) {
   return guest.invitationSentAt ? "sent" : "draft";
+}
+
+function publicInvitationPayload(req: Request, guest: Awaited<ReturnType<typeof storage.getRsvpByToken>>) {
+  if (!guest) {
+    return null;
+  }
+
+  return {
+    id: guest.id,
+    firstName: guest.firstName,
+    lastName: guest.lastName,
+    phone: guest.phone,
+    status: guest.status,
+    guestCount: guest.guestCount,
+    message: guest.message,
+    token: guest.token,
+    invitationSentAt: guest.invitationSentAt,
+    checkedInAt: guest.checkedInAt,
+    createdAt: guest.createdAt,
+    updatedAt: guest.updatedAt,
+    invitationUrl: buildInvitationLink(req, guest.token),
+    invitationStatus: getInvitationStatus(guest),
+  };
 }
 
 function isRateLimited(key: string) {
@@ -68,7 +90,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(429).json({ message: "Trop de tentatives RSVP. Merci de réessayer dans un instant." });
       }
 
-      const data = insertRsvpSchema.parse(req.body);
+      const data = publicRsvpSchema.parse(req.body);
       
       // Generate a unique token for the guest
       const token = nanoid(10);
@@ -76,15 +98,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const rsvp = await storage.createRsvp({
         ...data,
         token,
-        status: data.status || 'confirmed',
       });
-
-      // Send confirmation email asynchronously
-      if (rsvp.email) {
-        sendRsvpConfirmationEmail(rsvp).catch(err => {
-            console.error("Failed to send confirmation email:", err);
-        });
-      }
 
       res.status(201).json(rsvp);
     } catch (error: any) {
@@ -98,11 +112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!guest) {
       return res.status(404).json({ message: "Invitation introuvable" });
     }
-    res.json({
-      ...guest,
-      invitationUrl: buildInvitationLink(req, guest.token),
-      invitationStatus: getInvitationStatus(guest),
-    });
+    res.json(publicInvitationPayload(req, guest));
   });
 
   app.patch("/api/invitation/:token/rsvp", async (req, res) => {
@@ -117,16 +127,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Invitation introuvable" });
       }
 
-      const data = insertRsvpSchema.parse(req.body);
+      const data = publicRsvpSchema.parse(req.body);
       const updatedGuest = await storage.updateGuest(guest.id, data);
 
-      if (updatedGuest.email) {
-        sendRsvpConfirmationEmail(updatedGuest).catch((err) => {
-          console.error("Failed to send confirmation email:", err);
-        });
-      }
-
-      return res.json(updatedGuest);
+      return res.json(publicInvitationPayload(req, updatedGuest));
     } catch (error: any) {
       return res.status(400).json({ message: error.message || "Impossible de mettre à jour le RSVP" });
     }
@@ -155,6 +159,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       "status",
       "guestCount",
       "message",
+      "invitationStatus",
+      "invitationSentAt",
       "checkedInAt",
       "createdAt",
     ];
@@ -168,6 +174,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         guest.status,
         guest.guestCount,
         guest.message,
+        getInvitationStatus(guest),
+        guest.invitationSentAt?.toISOString(),
         guest.checkedInAt?.toISOString(),
         guest.createdAt?.toISOString(),
       ]

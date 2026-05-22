@@ -4,13 +4,11 @@ import { Clock, MapPin, ChevronDown, ExternalLink, Plus, Minus, Gift, Camera } f
 import { kecha2026 } from "@shared/kecha2026";
 import RsvpForm from "@/components/RsvpForm";
 import Countdown from "@/components/Countdown";
-import GalleryLightbox from "@/components/GalleryLightbox";
 
 import heroImg from "../../images/hero.jpeg";
 import kecha1Img from "../../images/kecha1.jpeg";
 import kecha2Img from "../../images/kecha2.jpeg";
 import heroVideo from "../../images/hero-kecha.mp4";
-import shadeOfWhiteImg from "../../images/shade-of-white.jpeg";
 
 const IMAGES = { hero: heroImg, kecha1: kecha1Img, kecha2: kecha2Img } as Record<string, string>;
 const rv = { duration: 1.05, ease: [0.22, 1, 0.36, 1] as const };
@@ -71,14 +69,11 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 }
 
 /* ─── Main ────────────────────────────────────────────────── */
-type LightboxItem = { src: string; alt: string; caption: string } | null;
-
 export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress: heroScroll } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroOpacity = useTransform(heroScroll, [0, 0.8], [1, 0]);
   const heroY = useTransform(heroScroll, [0, 1], ["0%", "18%"]);
-  const [lightboxItem, setLightboxItem] = useState<LightboxItem>(null);
 
   const weddingDate = new Date("2026-06-20T15:00:00+02:00");
 
@@ -232,10 +227,10 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ── MOBILE : contenu centré verticalement ── */}
+        {/* ── MOBILE : contenu en bas ── */}
         <motion.div
           style={{ y: heroY, opacity: heroOpacity }}
-          className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white md:hidden"
+          className="absolute inset-0 flex flex-col items-center justify-end pb-12 px-6 text-center text-white md:hidden"
         >
           <p className="text-[10px] uppercase tracking-[0.68em] text-white/50">
             Invitation officielle · Kinshasa
@@ -260,109 +255,18 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════════════════
-          2 · RSVP — Ultra important
-      ══════════════════════════════════════════════════════ */}
-      <section id="rsvp" style={{ background: "#F8F3EA" }} className="relative overflow-hidden">
-        <div className="absolute top-0 inset-x-0 h-px" style={{ background: "linear-gradient(90deg,transparent,rgba(196,170,128,0.28),transparent)" }} />
-        <div className="relative mx-auto grid max-w-6xl gap-14 px-6 py-24 md:px-10 md:py-28 lg:grid-cols-[1fr_1.5fr]">
-
-          <motion.div initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={rv} className="space-y-8">
-            <div>
-              <Label>RSVP</Label>
-              <h2 className="mt-5 font-serif leading-tight" style={{ color: "#2C2118", fontSize: "clamp(2rem,4.5vw,3rem)" }}>
-                Confirmez votre présence.
-              </h2>
-              <p className="mt-4 text-base leading-8" style={{ color: "#6A5D50" }}>
-                Merci de bien vouloir confirmer votre présence en remplissant le formulaire ci-contre.
-              </p>
-            </div>
-
-            {/* What to fill in */}
-            <div className="space-y-4">
-              <p className="text-[9px] uppercase tracking-[0.55em]" style={{ color: "#A89070" }}>
-                Veuillez indiquer
-              </p>
-              {[
-                "Votre nom et prénom",
-                "Le nombre de personnes qui vous accompagneront",
-                "Votre numéro de téléphone",
-              ].map((item, i) => (
-                <div key={i} className="flex items-start gap-4">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: "#C4AA80" }} />
-                  <p className="text-base leading-7" style={{ color: "#3C2E22" }}>{item}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Deadline */}
-            <div className="border-l-2 pl-5" style={{ borderColor: "rgba(196,170,128,0.5)" }}>
-              <p className="text-sm leading-7 italic" style={{ color: "#8A7A68" }}>
-                Nous vous serions reconnaissants de répondre avant le <span className="not-italic font-serif" style={{ color: "#3C2E22" }}>1er Juin 2026</span>.
-              </p>
-            </div>
-
-            <div className="space-y-5 border-t pt-6" style={{ borderColor: "rgba(196,170,128,0.25)" }}>
-              {kecha2026.programme.filter((e) => ["10h00", "19h00"].includes(e.time)).map((e) => (
-                <div key={e.time} className="border-l-2 pl-5" style={{ borderColor: "rgba(196,170,128,0.45)" }}>
-                  <p className="text-[9px] uppercase tracking-[0.45em]" style={{ color: "#A89070" }}>{e.title}</p>
-                  <p className="mt-1 font-serif text-lg" style={{ color: "#2C2118" }}>{e.time} · Kinshasa</p>
-                  <p className="text-[10px] italic" style={{ color: "#9A8A76" }}>{e.theme === "blessing" ? kecha2026.ceremony.blessing.theme : kecha2026.ceremony.evening.theme}</p>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ ...rv, delay: 0.1 }}>
-            <RsvpForm
-              variant="page"
-              title="Répondre à l'invitation"
-              description="Les champs marqués sont obligatoires. Remplissez puis appuyez sur le bouton en bas."
-              successDescription="Votre réponse a bien été enregistrée. Vous serez recontacté(e) directement."
-            />
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════
-          3 · NOTRE HISTOIRE — Timeline
+          2 · NOTRE HISTOIRE — Timeline
       ══════════════════════════════════════════════════════ */}
       <section id="histoire" style={{ background: "linear-gradient(160deg,#FAF6EE 0%,#EEE4D2 100%)" }} className="relative overflow-hidden">
         <div className="absolute top-0 inset-x-0 h-px" style={{ background: "linear-gradient(90deg,transparent,rgba(196,170,128,0.28),transparent)" }} />
 
         <div className="mx-auto max-w-5xl px-6 py-24 md:px-10 md:py-28">
-          <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={rv} className="mb-14 text-center">
+          <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={rv} className="mb-20 text-center">
             <Label>Notre histoire</Label>
             <h2 className="mt-5 font-serif leading-tight" style={{ color: "#2C2118", fontSize: "clamp(2rem,5vw,3.5rem)" }}>
               Un conte écrit à deux mains
             </h2>
           </motion.div>
-
-          {/* Poem */}
-          <motion.blockquote
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{ ...rv, delay: 0.1 }}
-            className="mx-auto mb-20 max-w-xl text-center"
-          >
-            <div className="space-y-5">
-              {kecha2026.couple.poem.map((stanza, si) => (
-                <p key={si} className="font-serif text-lg leading-9 italic" style={{ color: "#5A4A38" }}>
-                  {stanza.map((line, li) => (
-                    <span key={li}>
-                      {line}
-                      {li < stanza.length - 1 && <br />}
-                    </span>
-                  ))}
-                </p>
-              ))}
-            </div>
-            <div className="mt-8 flex items-center justify-center gap-4" style={{ opacity: 0.28 }}>
-              <div className="h-px w-12" style={{ background: "rgba(196,170,128,1)" }} />
-              <span style={{ color: "#C4AA80" }}>✦</span>
-              <div className="h-px w-12" style={{ background: "rgba(196,170,128,1)" }} />
-            </div>
-          </motion.blockquote>
 
           <div className="relative">
             {/* Vertical line */}
@@ -390,11 +294,12 @@ export default function Home() {
 
                   {/* Image side */}
                   {chapter.image ? (
-                    <div className="overflow-hidden editorial-shadow" style={{ aspectRatio: "3/4" }}>
+                    <div className="overflow-hidden editorial-shadow">
                       <motion.img
                         src={IMAGES[chapter.image]}
                         alt={chapter.title}
-                        className="h-full w-full object-cover"
+                        className="w-full object-cover"
+                        style={{ height: "clamp(280px,40vw,440px)" }}
                         initial={{ scale: 1.08 }}
                         whileInView={{ scale: 1 }}
                         viewport={{ once: true, amount: 0.35 }}
@@ -405,7 +310,7 @@ export default function Home() {
                     /* Decorative placeholder for chapters without image */
                     <div
                       className="flex items-center justify-center editorial-shadow"
-                      style={{ aspectRatio: "3/4", background: "linear-gradient(135deg,#F5EDE0,#EDE3D5)" }}
+                      style={{ height: "clamp(200px,30vw,320px)", background: "linear-gradient(135deg,#F5EDE0,#EDE3D5)" }}
                     >
                       <p className="font-script text-6xl" style={{ color: "rgba(122,101,80,0.25)" }}>Kecha</p>
                     </div>
@@ -480,6 +385,52 @@ export default function Home() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════
+          4 · RSVP — Ultra important
+      ══════════════════════════════════════════════════════ */}
+      <section id="rsvp" style={{ background: "#1A1008" }} className="relative overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse at 50% 0%,rgba(196,170,128,0.07) 0%,transparent 55%)" }}
+        />
+        <div className="relative mx-auto grid max-w-6xl gap-14 px-6 py-24 md:px-10 md:py-28 lg:grid-cols-[1fr_1.5fr]">
+
+          <motion.div initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={rv} className="space-y-8 text-white">
+            <div>
+              <Label dark>RSVP</Label>
+              <h2 className="mt-5 font-serif leading-tight text-white" style={{ fontSize: "clamp(2rem,4.5vw,3rem)" }}>
+                Confirmez votre présence.
+              </h2>
+              <p className="mt-5 text-base leading-8 text-white/65">{kecha2026.couple.narrative}</p>
+            </div>
+
+            <div className="space-y-5">
+              {kecha2026.programme.filter((e) => ["15h00", "19h00"].includes(e.time)).map((e) => (
+                <div key={e.time} className="border-l-2 pl-5" style={{ borderColor: "rgba(196,170,128,0.25)" }}>
+                  <p className="text-[9px] uppercase tracking-[0.45em] text-white/38">{e.title}</p>
+                  <p className="mt-1 font-serif text-lg text-white/85">{e.time} · Kinshasa</p>
+                  <p className="text-[10px] italic text-white/40">{e.theme === "blessing" ? kecha2026.ceremony.blessing.theme : kecha2026.ceremony.evening.theme}</p>
+                </div>
+              ))}
+            </div>
+
+            <blockquote className="border-t border-white/10 pt-6">
+              <p className="font-serif text-sm italic leading-7 text-white/55">« {kecha2026.scripture[0].text} »</p>
+              <p className="mt-3 text-[9px] uppercase tracking-[0.45em] text-white/30">— {kecha2026.scripture[0].reference}</p>
+            </blockquote>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ ...rv, delay: 0.1 }}>
+            <RsvpForm
+              variant="invitation"
+              title="Répondre à l'invitation"
+              description="Choisissez simplement si vous serez présent(e), puis indiquez si vous venez seul(e) ou en couple."
+              successDescription="Merci. Votre réponse a bien été enregistrée. Nous avons hâte de vous accueillir."
+            />
+          </motion.div>
         </div>
       </section>
 
@@ -570,60 +521,34 @@ export default function Home() {
           </motion.div>
 
           <div className="grid gap-8 md:grid-cols-2">
-            {/* Blessing — Shade of White */}
+            {/* Blessing */}
             <motion.article
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
+              viewport={{ once: true, amount: 0.4 }}
               transition={rv}
-              className="overflow-hidden editorial-shadow"
-              style={{ border: "1px solid rgba(196,170,128,0.28)" }}
+              className="p-8 editorial-shadow"
+              style={{ background: "#FAF6EE", border: "1px solid rgba(196,170,128,0.28)" }}
             >
-              {/* Mood photo */}
-              <div className="relative h-72 overflow-hidden">
-                <img
-                  src={shadeOfWhiteImg}
-                  alt="Shade of White mood"
-                  className="h-full w-full object-cover"
-                  style={{ objectPosition: "center 20%" }}
-                />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.42) 100%)" }} />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <p className="font-serif text-3xl text-white" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.35)" }}>
-                    Shades of White 🤍
-                  </p>
-                </div>
+              <p className="text-[9px] uppercase tracking-[0.58em]" style={{ color: "#A89070" }}>Cérémonie · 15h00</p>
+              <h3 className="mt-3 font-serif text-2xl" style={{ color: "#2C2118" }}>{kecha2026.dresscode.blessing.theme}</h3>
+              <p className="mt-3 text-sm leading-7" style={{ color: "#6A5D50" }}>{kecha2026.dresscode.blessing.description}</p>
+
+              {/* Color swatches */}
+              <div className="mt-6 flex gap-2 flex-wrap">
+                {kecha2026.dresscode.blessing.colors.map((color, i) => (
+                  <div key={color} className="group relative">
+                    <div
+                      className="h-9 w-9 border"
+                      style={{ background: color, borderColor: "rgba(196,170,128,0.25)" }}
+                      title={kecha2026.dresscode.blessing.colorNames[i]}
+                    />
+                  </div>
+                ))}
               </div>
 
-              {/* Content */}
-              <div className="p-8" style={{ background: "#FAF6EE" }}>
-                <p className="text-[9px] uppercase tracking-[0.58em]" style={{ color: "#A89070" }}>Cérémonie · 10h00</p>
-                <p className="mt-3 text-sm leading-7" style={{ color: "#6A5D50" }}>
-                  {kecha2026.dresscode.blessing.description}
-                </p>
-
-                {/* Color swatches */}
-                <div className="mt-6 grid grid-cols-6 gap-2">
-                  {kecha2026.dresscode.blessing.colors.map((color, i) => (
-                    <div key={color} className="flex flex-col items-center gap-2">
-                      <div
-                        className="w-full border"
-                        style={{ aspectRatio: "1/1.4", background: color, borderColor: "rgba(196,170,128,0.3)" }}
-                      />
-                      <p className="text-center text-[8px] uppercase tracking-[0.3em] leading-4" style={{ color: "#A89070" }}>
-                        {kecha2026.dresscode.blessing.colorNames[i]}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Warning */}
-                <div className="mt-5 flex items-start gap-3 border-t pt-4" style={{ borderColor: "rgba(196,170,128,0.22)" }}>
-                  <span className="mt-0.5 text-base">⚠️</span>
-                  <p className="text-[11px] leading-6" style={{ color: "#8B3A3A" }}>
-                    Pas de couleur marron. Uniquement des tons blancs.
-                  </p>
-                </div>
+              <div className="mt-5 border-t pt-4" style={{ borderColor: "rgba(196,170,128,0.18)" }}>
+                <p className="text-[10px] text-red-800/50 italic">{kecha2026.dresscode.blessing.forbidden}</p>
               </div>
             </motion.article>
 
@@ -640,63 +565,39 @@ export default function Home() {
               <h3 className="mt-3 font-serif text-2xl" style={{ color: "#F0E4D0" }}>{kecha2026.dresscode.evening.theme}</h3>
               <p className="mt-3 text-sm leading-7" style={{ color: "rgba(240,228,208,0.68)" }}>{kecha2026.dresscode.evening.description}</p>
 
-              <div className="mt-6 flex items-center gap-3 px-5 py-4" style={{ border: "1px dashed rgba(196,146,90,0.25)" }}>
-                <span className="font-serif text-2xl" style={{ color: "rgba(196,146,90,0.5)" }}>✦</span>
-                <p className="text-sm italic leading-6" style={{ color: "rgba(240,228,208,0.6)" }}>
-                  Venez comme vous vous sentez le plus élégants — aucune contrainte de couleur imposée.
-                </p>
+              <div className="mt-6 flex gap-2 flex-wrap">
+                {kecha2026.dresscode.evening.colors.map((color, i) => (
+                  <div key={color} className="group relative">
+                    <div
+                      className="h-9 w-9 border"
+                      style={{ background: color, borderColor: "rgba(196,146,90,0.2)" }}
+                      title={kecha2026.dresscode.evening.colorNames[i]}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-5 border-t pt-4" style={{ borderColor: "rgba(196,146,90,0.12)" }}>
+                <p className="text-[10px] italic" style={{ color: "rgba(196,146,90,0.45)" }}>{kecha2026.dresscode.evening.forbidden}</p>
               </div>
             </motion.article>
           </div>
 
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════
-          6b · VERSETS BIBLIQUES
-      ══════════════════════════════════════════════════════ */}
-      <section style={{ background: "#1A1008" }} className="relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(196,170,128,0.06) 0%, transparent 65%)" }} />
-
-        <div className="relative mx-auto max-w-4xl px-6 py-20 md:px-10 md:py-28">
-          <motion.div initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={rv} className="mb-14 text-center">
-            <Label dark>Parole de Dieu</Label>
-            <h2 className="mt-4 font-serif text-white/80" style={{ fontSize: "clamp(1.5rem,4vw,2.5rem)" }}>
-              Ce que Sa Parole dit de leur amour
-            </h2>
-          </motion.div>
-
-          <div className="space-y-10">
-            {kecha2026.scripture.map((verse, i) => (
-              <motion.div
+          {/* Versets */}
+          <div className="mt-16 space-y-10">
+            {kecha2026.scripture.slice(1).map((verse, i) => (
+              <motion.blockquote
                 key={verse.reference}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ ...rv, delay: i * 0.1 }}
-                className="relative border px-8 py-9 md:px-12 md:py-10"
-                style={{ borderColor: "rgba(196,170,128,0.14)", background: "rgba(255,255,255,0.02)" }}
+                initial={{ opacity: 0, x: i % 2 === 0 ? -16 : 16 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ ...rv, delay: i * 0.08 }}
+                className={`scripture-blockquote py-2 ${i % 2 !== 0 ? "border-r-2 pr-8 md:ml-16 md:text-right" : "border-l-2 pl-8 md:mr-16"}`}
+                style={{ borderColor: "rgba(196,168,128,0.45)" }}
               >
-                {/* Giant decorative quote mark */}
-                <span
-                  className="pointer-events-none absolute left-6 top-4 font-serif leading-none select-none"
-                  style={{ fontSize: "6rem", color: "rgba(196,170,128,0.08)", lineHeight: 1 }}
-                  aria-hidden
-                >
-                  «
-                </span>
-
-                <p className="relative font-serif text-lg italic leading-9 md:text-xl md:leading-10" style={{ color: "rgba(240,228,208,0.82)" }}>
-                  « {verse.text} »
-                </p>
-
-                <div className="mt-6 flex items-center gap-4">
-                  <div className="h-px flex-1" style={{ background: "rgba(196,170,128,0.18)" }} />
-                  <p className="shrink-0 text-[10px] uppercase tracking-[0.5em]" style={{ color: "rgba(196,170,128,0.55)" }}>
-                    {verse.reference}
-                  </p>
-                </div>
-              </motion.div>
+                <p className="font-serif text-lg italic leading-9" style={{ color: "#3C3026" }}>« {verse.text} »</p>
+                <p className="mt-4 text-[10px] uppercase tracking-[0.5em]" style={{ color: "#8A7860" }}>— {verse.reference}</p>
+              </motion.blockquote>
             ))}
           </div>
         </div>
@@ -738,97 +639,47 @@ export default function Home() {
       {/* ══════════════════════════════════════════════════════
           8 · GALERIE — Photos du couple
       ══════════════════════════════════════════════════════ */}
-      <section id="galerie" style={{ background: "#1C1208" }} className="relative overflow-hidden">
-        <div className="absolute top-0 inset-x-0 h-px" style={{ background: "linear-gradient(90deg,transparent,rgba(196,170,128,0.22),transparent)" }} />
+      <section id="galerie" style={{ background: "#F2EAD8" }} className="relative overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px" style={{ background: "linear-gradient(90deg,transparent,rgba(196,170,128,0.28),transparent)" }} />
 
         <div className="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-28">
           <motion.div initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={rv} className="mb-14 text-center">
-            <Camera className="mx-auto h-6 w-6 mb-5" strokeWidth={1.3} style={{ color: "rgba(196,170,128,0.6)" }} />
-            <Label dark>Galerie</Label>
-            <h2 className="mt-5 font-serif leading-tight text-white/85" style={{ fontSize: "clamp(2rem,5vw,3.25rem)" }}>
+            <Camera className="mx-auto h-6 w-6 mb-5" strokeWidth={1.3} style={{ color: "#B09878" }} />
+            <Label>Galerie</Label>
+            <h2 className="mt-5 font-serif leading-tight" style={{ color: "#2C2118", fontSize: "clamp(2rem,5vw,3.25rem)" }}>
               Un instant suspendu
             </h2>
-            <p className="mt-3 text-sm" style={{ color: "rgba(196,170,128,0.45)" }}>
-              Cliquez sur une photo pour l'agrandir
-            </p>
           </motion.div>
 
-          {/* Masonry-style grid: centre tall, flanks shorter */}
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
-            {/* Left column — two stacked */}
-            <div className="flex flex-col gap-3 md:gap-4">
-              {[
-                { img: kecha1Img, alt: "Ketsia & Chad", caption: "La joie." },
-                { img: kecha2Img, alt: "Kinshasa", caption: "Le chemin." },
-              ].map((item, i) => (
-                <motion.button
-                  key={item.caption}
-                  type="button"
-                  onClick={() => setLightboxItem({ src: item.img, alt: item.alt, caption: item.caption })}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.25 }}
-                  transition={{ ...rv, delay: i * 0.08 }}
-                  className="group relative overflow-hidden editorial-shadow cursor-zoom-in text-left"
-                  style={{ height: "clamp(160px,22vw,280px)" }}
-                >
-                  <img src={item.img} alt={item.alt} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/20 to-transparent px-4 pb-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                    <p className="font-serif text-base italic text-white">{item.caption}</p>
-                  </div>
-                </motion.button>
-              ))}
-            </div>
-
-            {/* Centre — tall hero, full row height */}
-            <motion.button
-              type="button"
-              onClick={() => setLightboxItem({ src: heroImg, alt: "La demande en mariage", caption: "La promesse." })}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
-              transition={{ ...rv, delay: 0.05 }}
-              className="group relative overflow-hidden editorial-shadow cursor-zoom-in col-span-1 md:row-span-1 text-left"
-              style={{ height: "clamp(340px,46vw,580px)" }}
-            >
-              <img src={heroImg} alt="La demande" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent px-5 pb-6 pt-20">
-                <p className="font-serif text-xl italic text-white/90">La promesse.</p>
-                <p className="mt-1 text-[10px] uppercase tracking-[0.4em]" style={{ color: "rgba(196,170,128,0.65)" }}>
-                  La demande en mariage
-                </p>
-              </div>
-            </motion.button>
-
-            {/* Right column — mirror of left on desktop, hidden on mobile */}
-            <div className="hidden md:flex flex-col gap-4">
-              {[
-                { img: kecha2Img, alt: "Kinshasa", caption: "Le chemin." },
-                { img: kecha1Img, alt: "Ketsia & Chad", caption: "La joie." },
-              ].map((item, i) => (
-                <motion.button
-                  key={`r-${item.caption}`}
-                  type="button"
-                  onClick={() => setLightboxItem({ src: item.img, alt: item.alt, caption: item.caption })}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.25 }}
-                  transition={{ ...rv, delay: 0.12 + i * 0.08 }}
-                  className="group relative overflow-hidden editorial-shadow cursor-zoom-in text-left"
-                  style={{ height: "clamp(160px,22vw,280px)" }}
-                >
-                  <img src={item.img} alt={item.alt} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/70 via-black/20 to-transparent px-4 pb-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                    <p className="font-serif text-base italic text-white">{item.caption}</p>
-                  </div>
-                </motion.button>
-              ))}
-            </div>
+          {/* 3-col grid */}
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              { img: kecha1Img, alt: "Ketsia & Chad", caption: "La joie.", tall: false },
+              { img: heroImg, alt: "La demande", caption: "La promesse.", tall: true },
+              { img: kecha2Img, alt: "Kinshasa", caption: "Le chemin.", tall: false },
+            ].map((item, i) => (
+              <motion.div
+                key={item.caption}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ ...rv, delay: i * 0.08 }}
+                className={`relative overflow-hidden editorial-shadow group ${item.tall ? "md:row-span-2" : ""}`}
+                style={{ height: item.tall ? "clamp(500px,70vw,720px)" : "clamp(240px,30vw,340px)" }}
+              >
+                <img
+                  src={item.img}
+                  alt={item.alt}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent px-5 pb-5 pt-14">
+                  <p className="font-serif text-lg italic text-white/88">{item.caption}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
-
-      <GalleryLightbox item={lightboxItem} onClose={() => setLightboxItem(null)} />
 
       {/* ══════════════════════════════════════════════════════
           9 · FAQ

@@ -1,21 +1,52 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { type RsvpResponse } from "@shared/schema";
-import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useMemo, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Check, Loader2, Search, UserCheck } from "lucide-react";
+import { Link } from "wouter";
+import { type SafeUser } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, Check, Loader2, UserCheck } from "lucide-react";
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
-import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+type GuestRecord = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  status: string;
+  guestCount: number;
+  checkedInAt: string | null;
+};
+
+async function getCurrentUser() {
+  const res = await fetch("/api/user", {
+    credentials: "include",
+  });
+
+  if (res.status === 401) {
+    return null;
+  }
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Impossible de vérifier la session.");
+  }
+
+  return (await res.json()) as SafeUser;
+}
 
 export default function CheckIn() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: guests, isLoading } = useQuery<RsvpResponse[]>({
+  const { data: user, isLoading: isCheckingSession } = useQuery<SafeUser | null>({
+    queryKey: ["/api/user"],
+    queryFn: getCurrentUser,
+  });
+
+  const { data: guests = [], isLoading } = useQuery<GuestRecord[]>({
     queryKey: ["/api/admin/guests"],
+    enabled: Boolean(user),
   });
 
   const checkInMutation = useMutation({
@@ -24,97 +55,134 @@ export default function CheckIn() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/guests"] });
-      toast({ title: "Entrée validée avec joie" });
+      toast({ title: "Entrée validée" });
     },
   });
 
-  const filteredGuests = guests?.filter(g => 
-    `${g.firstName} ${g.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
-  ).sort((a, b) => (a.checkedInAt ? 1 : -1));
+  const filteredGuests = useMemo(() => {
+    return guests
+      .filter((guest) => guest.status === "confirmed")
+      .filter((guest) =>
+        `${guest.firstName} ${guest.lastName}`
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()),
+      )
+      .sort((a, b) => Number(Boolean(a.checkedInAt)) - Number(Boolean(b.checkedInAt)));
+  }, [guests, searchTerm]);
+
+  if (isCheckingSession) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" strokeWidth={1.2} />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#f7f1ea] px-6">
+        <div className="border border-primary/10 bg-white p-8 text-center editorial-shadow">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-primary/60">
+            Check-in
+          </p>
+          <h1 className="mt-4 font-serif text-3xl text-foreground">
+            Connexion requise
+          </h1>
+          <Button asChild className="mt-6 rounded-none bg-primary hover:bg-foreground">
+            <Link href="/admin">Ouvrir l'admin</Link>
+          </Button>
+        </div>
+      </main>
+    );
+  }
 
   if (isLoading) {
-    return <div className="flex items-center justify-center h-screen bg-background"><Loader2 className="animate-spin text-primary w-12 h-12" strokeWidth={1} /></div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" strokeWidth={1.2} />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-ivory/20 flex flex-col gap-8 pb-32">
-      <header className="bg-white px-6 py-12 text-center border-b border-primary/5 editorial-shadow">
-         <div className="flex items-center justify-center gap-2 text-primary/60 mb-4">
-           <UserCheck className="w-5 h-5" strokeWidth={1.5} />
-           <p className="text-[10px] font-sans tracking-[0.5em] uppercase">Private Reception</p>
-         </div>
-         <h1 className="text-4xl md:text-5xl font-serif text-foreground leading-tight italic">Bienvenue</h1>
-         <p className="font-script text-2xl text-primary/40 lowercase mt-2">kecha & bénédiction</p>
-      </header>
+    <main className="min-h-screen bg-[#f8f2ea] px-6 py-8 md:px-10">
+      <div className="mx-auto max-w-5xl space-y-8">
+        <header className="border border-primary/10 bg-white px-8 py-10 text-center editorial-shadow">
+          <div className="flex items-center justify-center gap-2 text-primary/60">
+            <UserCheck className="h-5 w-5" strokeWidth={1.5} />
+            <p className="text-[10px] uppercase tracking-[0.5em]">Check-in</p>
+          </div>
+          <h1 className="mt-4 font-serif text-4xl text-foreground md:text-5xl">
+            Accueil des invités confirmés
+          </h1>
+          <Button
+            asChild
+            variant="outline"
+            className="mt-6 rounded-none border-primary/15 text-[10px] uppercase tracking-[0.35em] text-primary"
+          >
+            <Link href="/admin">Retour à l'admin</Link>
+          </Button>
+        </header>
 
-      <div className="px-6 sticky top-0 z-20 pt-4">
-        <div className="relative group">
-          <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-primary opacity-30 group-focus-within:opacity-100 transition-opacity duration-500" />
-          <Input 
-            placeholder="Rechercher un convive..." 
-            className="pl-16 py-10 rounded-none border-primary/10 bg-white/90 backdrop-blur-md text-xl font-serif italic editorial-shadow focus-visible:ring-1 focus-visible:ring-primary/20" 
+        <div className="relative">
+          <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-primary/30" />
+          <Input
+            placeholder="Rechercher un convive..."
+            className="h-16 rounded-none border-primary/10 bg-white pl-14 text-lg editorial-shadow focus-visible:ring-primary/20"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(event) => setSearchTerm(event.target.value)}
           />
         </div>
-      </div>
 
-      <div className="flex flex-col gap-6 px-6">
-        <AnimatePresence mode="popLayout">
-          {filteredGuests?.map((guest) => (
-            <motion.div
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
+        <div className="grid gap-4">
+          {filteredGuests.map((guest) => (
+            <article
               key={guest.id}
+              className={`flex items-center justify-between gap-5 border border-primary/10 p-6 editorial-shadow ${
+                guest.checkedInAt ? "bg-white/65" : "bg-white"
+              }`}
             >
-              <Card className={`rounded-none border-primary/5 editorial-shadow transition-all duration-1000 ${guest.checkedInAt ? 'opacity-30' : 'bg-white'}`}>
-                <CardContent className="p-8 flex justify-between items-center gap-6">
-                  <div className="space-y-2">
-                    <p className="font-serif text-2xl text-foreground">{guest.firstName} {guest.lastName}</p>
-                    <div className="flex items-center gap-4">
-                       <p className="text-[10px] font-sans tracking-[0.3em] uppercase text-primary/40">{guest.guestCount} places réservées</p>
-                       {guest.checkedInAt && (
-                         <Badge variant="outline" className="bg-primary/5 text-primary text-[9px] uppercase tracking-widest px-3 border-none">Enregistré</Badge>
-                       )}
-                    </div>
-                  </div>
+              <div>
+                <p className="font-serif text-2xl text-foreground">
+                  {guest.firstName} {guest.lastName}
+                </p>
+                <p className="mt-2 text-[10px] uppercase tracking-[0.3em] text-primary/45">
+                  {guest.guestCount === 2 ? "En couple" : "Seul(e)"}
+                </p>
+                {guest.checkedInAt ? (
+                  <Badge
+                    variant="outline"
+                    className="mt-3 rounded-none border-0 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-primary"
+                  >
+                    Check-in validé
+                  </Badge>
+                ) : null}
+              </div>
 
-                  {!guest.checkedInAt ? (
-                    <Button 
-                      onClick={() => checkInMutation.mutate(guest.id)}
-                      disabled={checkInMutation.isPending}
-                      className="rounded-none h-16 w-16 p-0 bg-primary hover:bg-foreground text-white transition-all duration-1000 editorial-shadow flex items-center justify-center shrink-0"
-                    >
-                      <Check className="w-8 h-8" strokeWidth={1.5} />
-                    </Button>
-                  ) : (
-                    <div className="w-16 h-16 flex items-center justify-center border border-primary/10 rounded-none">
-                       <Check className="w-8 h-8 text-primary" strokeWidth={1} />
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
+              {!guest.checkedInAt ? (
+                <Button
+                  onClick={() => checkInMutation.mutate(guest.id)}
+                  disabled={checkInMutation.isPending}
+                  className="rounded-none bg-primary px-5 py-6 text-[10px] uppercase tracking-[0.35em] text-primary-foreground hover:bg-foreground"
+                >
+                  <Check className="mr-2 h-4 w-4" strokeWidth={1.8} />
+                  Valider
+                </Button>
+              ) : (
+                <div className="flex h-14 w-14 items-center justify-center border border-primary/10">
+                  <Check className="h-7 w-7 text-primary" strokeWidth={1.4} />
+                </div>
+              )}
+            </article>
           ))}
-        </AnimatePresence>
-        
-        {filteredGuests?.length === 0 && (
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-32 font-serif italic text-foreground/30 text-xl"
-          >
-            "Aucun convive ne semble correspondre à votre recherche"
-          </motion.p>
-        )}
+
+          {filteredGuests.length === 0 ? (
+            <p className="py-20 text-center font-serif text-2xl text-foreground/40">
+              Aucun invité confirmé ne correspond à votre recherche.
+            </p>
+          ) : null}
+        </div>
       </div>
-      
-      {/* Footer Branding */}
-      <footer className="mt-auto py-12 text-center opacity-20 pointer-events-none">
-          <p className="font-script text-4xl text-primary lowercase">K</p>
-      </footer>
-    </div>
+    </main>
   );
 }

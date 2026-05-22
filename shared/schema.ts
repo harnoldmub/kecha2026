@@ -43,10 +43,8 @@ export const rsvpResponses = pgTable("rsvp_responses", {
   // Status & Attendance
   status: varchar("status", { length: 50 }).notNull().default('pending'), // 'confirmed', 'declined', 'pending'
   guestCount: integer("guest_count").notNull().default(1),
-  mealChoice: varchar("meal_choice", { length: 100 }),
   message: text("message"), // Optional message from guest
-  escort: varchar("escort", { length: 200 }), // Name of accompanying guest
-
+  
   // Invitation & Check-in
   token: varchar("token").unique().notNull(), // For personalized invitation links
   invitationSentAt: timestamp("invitation_sent_at"),
@@ -55,6 +53,17 @@ export const rsvpResponses = pgTable("rsvp_responses", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+const optionalTrimmedString = () =>
+  z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => (value ? value : null));
+
+const adminStatusSchema = z.enum(["pending", "confirmed", "declined"]);
+const publicStatusSchema = z.enum(["confirmed", "declined"]);
+const publicGuestCountSchema = z.union([z.literal(0), z.literal(1), z.literal(2)]);
 
 // Zod Schemas for Validation
 export const insertRsvpSchema = createInsertSchema(rsvpResponses, {
@@ -66,34 +75,12 @@ export const insertRsvpSchema = createInsertSchema(rsvpResponses, {
       .or(z.literal(""))
       .optional()
       .transform((value) => (value ? value : null)),
-  phone: () =>
-    z
-      .string()
-      .trim()
-      .min(1, "Numéro de téléphone requis")
-      .transform((value) => (value ? value : null)),
-  mealChoice: () =>
-    z
-      .string()
-      .trim()
-      .optional()
-      .transform((value) => (value ? value : null)),
-  message: () =>
-    z
-      .string()
-      .trim()
-      .optional()
-      .transform((value) => (value ? value : null)),
+  phone: optionalTrimmedString,
+  message: optionalTrimmedString,
   firstName: (schema) => schema.min(1, "Prénom requis"),
   lastName: (schema) => schema.min(1, "Nom requis"),
-  status: () => z.enum(["pending", "confirmed", "declined"]).default("confirmed"),
-  guestCount: (schema) => schema.min(1, "Au moins 1 personne").max(2, "Maximum 2 personnes"),
-  escort: () =>
-    z
-      .string()
-      .trim()
-      .optional()
-      .transform((value) => (value ? value : null)),
+  status: () => adminStatusSchema.default("pending"),
+  guestCount: (schema) => schema.min(0).max(2),
 }).omit({
   token: true,
   invitationSentAt: true,
@@ -102,9 +89,35 @@ export const insertRsvpSchema = createInsertSchema(rsvpResponses, {
   updatedAt: true,
 });
 
+export const publicRsvpSchema = z
+  .object({
+    firstName: z.string().trim().min(1, "Prénom requis"),
+    lastName: z.string().trim().min(1, "Nom requis"),
+    phone: z.string().trim().min(6, "Téléphone requis"),
+    status: publicStatusSchema,
+    guestCount: publicGuestCountSchema,
+    message: optionalTrimmedString(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.status === "confirmed" && ![1, 2].includes(data.guestCount)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Choisissez Seul(e) ou En couple.",
+        path: ["guestCount"],
+      });
+    }
+
+    if (data.status === "declined" && data.guestCount !== 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Aucune place ne doit être sélectionnée si l'invité ne vient pas.",
+        path: ["guestCount"],
+      });
+    }
+  });
+
 export const adminGuestSchema = insertRsvpSchema.extend({
-  status: z.enum(["pending", "confirmed", "declined"]).default("pending"),
-  guestCount: z.number().int().min(1).max(20).default(1),
+  status: adminStatusSchema.default("pending"),
 });
 
 export const updateGuestSchema = adminGuestSchema.partial();
@@ -117,6 +130,6 @@ export type SafeUser = Omit<User, "password">;
 export type InsertUser = typeof users.$inferInsert;
 export type RsvpResponse = typeof rsvpResponses.$inferSelect;
 export type InsertRsvpResponse = typeof rsvpResponses.$inferInsert;
-export type RsvpFormInput = z.infer<typeof insertRsvpSchema>;
+export type RsvpFormInput = z.infer<typeof publicRsvpSchema>;
 export type AdminGuestInput = z.infer<typeof adminGuestSchema>;
 export type UpdateGuestInput = z.infer<typeof updateGuestSchema>;

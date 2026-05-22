@@ -9,6 +9,7 @@ import CodeGate from "@/components/CodeGate";
 const RSVP = lazy(() => import("@/pages/RSVP"));
 const Invitation = lazy(() => import("@/pages/Invitation"));
 const Admin = lazy(() => import("@/pages/Admin"));
+const CheckIn = lazy(() => import("@/pages/CheckIn"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 function PageFallback() {
@@ -19,19 +20,24 @@ function PageFallback() {
   );
 }
 
+function HomeRoute() {
+  return (
+    <CodeGate>
+      <Home />
+    </CodeGate>
+  );
+}
+
 function Router() {
   return (
     <Suspense fallback={<PageFallback />}>
       <Switch>
-        <Route path="/">
-          <CodeGate>
-            <Home />
-          </CodeGate>
-        </Route>
+        <Route path="/" component={HomeRoute} />
+        <Route path="/accueil" component={HomeRoute} />
         <Route path="/rsvp" component={RSVP} />
         <Route path="/invitation/:token" component={Invitation} />
         <Route path="/admin" component={Admin} />
-        <Route path="/accueil" component={Admin} />
+        <Route path="/check-in" component={CheckIn} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
