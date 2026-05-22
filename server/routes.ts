@@ -261,6 +261,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(guest);
   });
 
+  app.patch("/api/rsvp/:id/check-in/reset", requireAuth, async (req, res) => {
+    const id = parseInt(req.params.id);
+    const guest = await storage.undoCheckInGuest(id);
+    res.json(guest);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

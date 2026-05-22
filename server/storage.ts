@@ -27,6 +27,7 @@ export interface IStorage {
   markInvitationSent(id: number): Promise<RsvpResponse>;
   deleteGuest(id: number): Promise<void>;
   checkInGuest(id: number): Promise<RsvpResponse>;
+  undoCheckInGuest(id: number): Promise<RsvpResponse>;
   
   // Auth / Users
   getUser(id: string): Promise<User | undefined>;
@@ -111,6 +112,14 @@ export class DatabaseStorage implements IStorage {
   async checkInGuest(id: number): Promise<RsvpResponse> {
     const [rsvp] = await db.update(rsvpResponses)
       .set({ checkedInAt: new Date(), updatedAt: new Date() })
+      .where(eq(rsvpResponses.id, id))
+      .returning();
+    return rsvp;
+  }
+
+  async undoCheckInGuest(id: number): Promise<RsvpResponse> {
+    const [rsvp] = await db.update(rsvpResponses)
+      .set({ checkedInAt: null, updatedAt: new Date() })
       .where(eq(rsvpResponses.id, id))
       .returning();
     return rsvp;

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Check, Loader2, Search, UserCheck } from "lucide-react";
+import { Check, Loader2, RotateCcw, Search, UserCheck } from "lucide-react";
 import { Link } from "wouter";
 import { type SafeUser } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
@@ -55,7 +55,17 @@ export default function CheckIn() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/guests"] });
-      toast({ title: "Entrée validée" });
+      toast({ title: "Check-in validé" });
+    },
+  });
+
+  const resetCheckInMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("PATCH", `/api/rsvp/${id}/check-in/reset`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/guests"] });
+      toast({ title: "Check-in annulé" });
     },
   });
 
@@ -67,8 +77,14 @@ export default function CheckIn() {
           .toLowerCase()
           .includes(searchTerm.toLowerCase()),
       )
-      .sort((a, b) => Number(Boolean(a.checkedInAt)) - Number(Boolean(b.checkedInAt)));
+      .sort((a, b) => {
+        if (a.checkedInAt && !b.checkedInAt) return 1;
+        if (!a.checkedInAt && b.checkedInAt) return -1;
+        return a.firstName.localeCompare(b.firstName);
+      });
   }, [guests, searchTerm]);
+
+  const checkedInCount = filteredGuests.filter((guest) => guest.checkedInAt).length;
 
   if (isCheckingSession) {
     return (
@@ -115,6 +131,9 @@ export default function CheckIn() {
           <h1 className="mt-4 font-serif text-4xl text-foreground md:text-5xl">
             Accueil des invités confirmés
           </h1>
+          <p className="mt-4 text-sm leading-7 text-foreground/65">
+            {checkedInCount} check-in validé{checkedInCount > 1 ? "s" : ""} sur {filteredGuests.length} invité{filteredGuests.length > 1 ? "s" : ""} affiché{filteredGuests.length > 1 ? "s" : ""}.
+          </p>
           <Button
             asChild
             variant="outline"
@@ -135,46 +154,63 @@ export default function CheckIn() {
         </div>
 
         <div className="grid gap-4">
-          {filteredGuests.map((guest) => (
-            <article
-              key={guest.id}
-              className={`flex items-center justify-between gap-5 border border-primary/10 p-6 editorial-shadow ${
-                guest.checkedInAt ? "bg-white/65" : "bg-white"
-              }`}
-            >
-              <div>
-                <p className="font-serif text-2xl text-foreground">
-                  {guest.firstName} {guest.lastName}
-                </p>
-                <p className="mt-2 text-[10px] uppercase tracking-[0.3em] text-primary/45">
-                  {guest.guestCount === 2 ? "En couple" : "Seul(e)"}
-                </p>
-                {guest.checkedInAt ? (
-                  <Badge
-                    variant="outline"
-                    className="mt-3 rounded-none border-0 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-primary"
-                  >
-                    Check-in validé
-                  </Badge>
-                ) : null}
-              </div>
+          {filteredGuests.map((guest) => {
+            const isCheckedIn = Boolean(guest.checkedInAt);
 
-              {!guest.checkedInAt ? (
-                <Button
-                  onClick={() => checkInMutation.mutate(guest.id)}
-                  disabled={checkInMutation.isPending}
-                  className="rounded-none bg-primary px-5 py-6 text-[10px] uppercase tracking-[0.35em] text-primary-foreground hover:bg-foreground"
-                >
-                  <Check className="mr-2 h-4 w-4" strokeWidth={1.8} />
-                  Valider
-                </Button>
-              ) : (
-                <div className="flex h-14 w-14 items-center justify-center border border-primary/10">
-                  <Check className="h-7 w-7 text-primary" strokeWidth={1.4} />
+            return (
+              <article
+                key={guest.id}
+                className={`flex items-center justify-between gap-5 border border-primary/10 p-6 editorial-shadow ${
+                  isCheckedIn ? "bg-white/65" : "bg-white"
+                }`}
+              >
+                <div>
+                  <p className="font-serif text-2xl text-foreground">
+                    {guest.firstName} {guest.lastName}
+                  </p>
+                  <p className="mt-2 text-[10px] uppercase tracking-[0.3em] text-primary/45">
+                    {guest.guestCount === 2 ? "En couple" : "Seul(e)"}
+                  </p>
+                  {isCheckedIn ? (
+                    <Badge
+                      variant="outline"
+                      className="mt-3 rounded-none border-0 bg-primary/10 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-primary"
+                    >
+                      Check-in validé
+                    </Badge>
+                  ) : null}
                 </div>
-              )}
-            </article>
-          ))}
+
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    onClick={() =>
+                      isCheckedIn
+                        ? resetCheckInMutation.mutate(guest.id)
+                        : checkInMutation.mutate(guest.id)
+                    }
+                    disabled={checkInMutation.isPending || resetCheckInMutation.isPending}
+                    className={`rounded-none px-5 py-6 text-[10px] uppercase tracking-[0.35em] ${
+                      isCheckedIn
+                        ? "border border-primary/15 bg-white text-primary hover:bg-primary/5"
+                        : "bg-primary text-primary-foreground hover:bg-foreground"
+                    }`}
+                  >
+                    {isCheckedIn ? (
+                      <>
+                        <RotateCcw className="mr-2 h-4 w-4" strokeWidth={1.8} />
+                        Annuler
+                      </>
+                    ) : (
+                      <>
+                        <Check className="mr-2 h-4 w-4" strokeWidth={1.8} />
+                        Valider
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </article>
+            );
+          })}
 
           {filteredGuests.length === 0 ? (
             <p className="py-20 text-center font-serif text-2xl text-foreground/40">
